@@ -20,7 +20,7 @@ def step_impl(context, username):
 @then(u"'{username}'可以使用密码'{pwd}'登陆系统")
 def step_impl(context, username, pwd):
 	response = context.client.put('user.logined_user', {
-		'phone': USERNAME2PHONE[username],
+		'phone': user_util.USERNAME2PHONE[username],
 		'password': pwd
 	})
 	bdd_util.assert_api_call_success(response)
@@ -30,11 +30,4 @@ def step_impl(context, username, pwd):
 
 @given(u"{username}登录系统")
 def step_impl(context, username):
-	response = context.client.put('user.logined_user', {
-		'phone': user_util.USERNAME2PHONE[username],
-		'password': settings.BDD_USER_PWD
-	})
-	bdd_util.assert_api_call_success(response)
-	resp_user = response['data']
-	if resp_user['token'] == "":
-		assert False
+	context.client.login(user_util.USERNAME2PHONE[username])

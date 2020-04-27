@@ -2,14 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5c07a126-1b4d-429a-8c85-bc2c55218540" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/conf/dev.conf.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/picasso.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/picasso.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/db/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf/dev.conf.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/middleware/account_middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/account_middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/space/spaces.go" beforeDir="false" afterPath="$PROJECT_DIR$/api/space/spaces.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/db/space/space.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/space/space.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/model/space/space.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/model/space/space.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/model/space/space_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/model/space/space_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/steps/user/space_steps.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/steps/user/space_steps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/steps/user/user_steps.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/steps/user/user_steps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/user/space.feature" beforeDir="false" afterPath="$PROJECT_DIR$/features/user/space.feature" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/util/bdd_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/util/bdd_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/util/remote_service_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/util/remote_service_client.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +33,11 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="InvalidFacetManager">
+    <ignored-facets>
+      <facet id="picasso/invalid/Python facet" />
+    </ignored-facets>
   </component>
   <component name="ProjectId" id="1awe9qbdeupiYMDg9j8fZ9kJkf0" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -146,34 +155,34 @@
       <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state x="619" y="210" key="FileChooserDialogImpl/62.0.1474.864@62.0.1474.864" timestamp="1587651989074" />
-    <state width="1291" height="351" key="GridCell.Tab.0.bottom" timestamp="1587968938916">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state width="1431" height="316" key="GridCell.Tab.0.bottom" timestamp="1588001400484">
+      <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state width="1291" height="351" key="GridCell.Tab.0.bottom/1920.0.1080.1920/0.0.1920.1080@0.0.1920.1080" timestamp="1587968938916" />
-    <state width="1431" height="298" key="GridCell.Tab.0.bottom/62.0.1474.864@62.0.1474.864" timestamp="1587917923974" />
-    <state width="1291" height="351" key="GridCell.Tab.0.center" timestamp="1587968938916">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state width="1431" height="316" key="GridCell.Tab.0.bottom/62.0.1474.864@62.0.1474.864" timestamp="1588001400484" />
+    <state width="1431" height="316" key="GridCell.Tab.0.center" timestamp="1588001400484">
+      <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state width="1291" height="351" key="GridCell.Tab.0.center/1920.0.1080.1920/0.0.1920.1080@0.0.1920.1080" timestamp="1587968938916" />
-    <state width="1431" height="298" key="GridCell.Tab.0.center/62.0.1474.864@62.0.1474.864" timestamp="1587917923973" />
-    <state width="1291" height="351" key="GridCell.Tab.0.left" timestamp="1587968938916">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state width="1431" height="316" key="GridCell.Tab.0.center/62.0.1474.864@62.0.1474.864" timestamp="1588001400484" />
+    <state width="1431" height="316" key="GridCell.Tab.0.left" timestamp="1588001400484">
+      <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state width="1291" height="351" key="GridCell.Tab.0.left/1920.0.1080.1920/0.0.1920.1080@0.0.1920.1080" timestamp="1587968938916" />
-    <state width="1431" height="298" key="GridCell.Tab.0.left/62.0.1474.864@62.0.1474.864" timestamp="1587917923973" />
-    <state width="1291" height="351" key="GridCell.Tab.0.right" timestamp="1587968938916">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state width="1431" height="316" key="GridCell.Tab.0.left/62.0.1474.864@62.0.1474.864" timestamp="1588001400484" />
+    <state width="1431" height="316" key="GridCell.Tab.0.right" timestamp="1588001400484">
+      <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state width="1291" height="351" key="GridCell.Tab.0.right/1920.0.1080.1920/0.0.1920.1080@0.0.1920.1080" timestamp="1587968938916" />
-    <state width="1431" height="298" key="GridCell.Tab.0.right/62.0.1474.864@62.0.1474.864" timestamp="1587917923974" />
+    <state width="1431" height="316" key="GridCell.Tab.0.right/62.0.1474.864@62.0.1474.864" timestamp="1588001400484" />
     <state x="585" y="228" key="SettingsEditor" timestamp="1587961765028">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="585" y="228" key="SettingsEditor/1920.0.1080.1920/0.0.1920.1080@0.0.1920.1080" timestamp="1587961765028" />
     <state x="220" y="0" key="SettingsEditor/62.0.1474.864@62.0.1474.864" timestamp="1587651166578" />
-    <state x="436" y="105" width="737" height="662" key="find.popup" timestamp="1587657342449">
+    <state x="436" y="105" width="737" height="666" key="find.popup" timestamp="1588001311995">
       <screen x="62" y="0" width="1474" height="864" />
     </state>
-    <state x="436" y="105" width="737" height="662" key="find.popup/62.0.1474.864@62.0.1474.864" timestamp="1587657342449" />
+    <state x="436" y="105" width="737" height="666" key="find.popup/62.0.1474.864@62.0.1474.864" timestamp="1588001311995" />
   </component>
 </project>

@@ -29,7 +29,7 @@ def step_impl(context, username, space_name):
 def step_impl(context, username):
 	expected = json.loads(context.text)
 	response = context.client.get('space.spaces', {})
-	actual = response['data']
+	actual = response['data']['spaces']
 	bdd_util.assert_json(expected, actual)
 
 @when(u"'{username}'邀请'{member_name}'成为空间'{space_name}'的成员")

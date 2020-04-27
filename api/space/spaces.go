@@ -27,7 +27,7 @@ func (this *Spaces) Get() ghost.Response{
 	ctx := this.GetCtx()
 	user := dm_account.GetUserFromCtx(ctx)
 	paginator := ghost.NewPaginator(params.CurPage, params.PageSize)
-	spaces := dm_space.NewSpaceRepository(ctx).GetForUser(user, ghost.Map{}, paginator)
+	spaces := dm_space.NewSpaceRepository(ctx).GetSpacesForUser(user, ghost.Map{}, paginator)
 	return ghost.NewJsonResponse(ghost.Map{
 		"spaces": dm_space.NewSpaceEncodeService(ctx).EncodeMany(spaces),
 		"page_info": paginator.ToResultMap(),

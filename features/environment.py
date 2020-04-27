@@ -32,5 +32,5 @@ def before_scenario(context, scenario):
 	user_util.init_username2phone()
 
 def after_scenario(context, scenario):
-	if hasattr(context, 'client') and context.client and context.client.user:
+	if hasattr(context, 'client') and context.client and context.client.user_phone:
 		context.client.logout()

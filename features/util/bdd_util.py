@@ -4,42 +4,19 @@ import json
 import logging
 from jsondiff import diff
 
-from features.util.remote_service_client import RemoteServiceClient
-
 class Obj(object):
 	def __init__(self):
 		pass
 
-def login(username, **kwargs):
-
-	if 'context' in kwargs:
-		context = kwargs['context']
-		if hasattr(context, 'client'):
-			if context.client.user and context.client.user.username == username:
-				# 如果已经登录了，且登录用户与user相同，直接返回
-				return context.client
-			else:
-				# 如果已经登录了，且登录用户不与user相同，退出登录
-				context.client.logout()
-
-	client = RemoteServiceClient().login(username)
-
-	if 'context' in kwargs:
-		context = kwargs['context']
-		context.client = client
-
-	return client
-
-
 def assert_json(expected, actual):
-	print expected
-	print actual
-	result = diff(expected, actual)
-	if len(result) > 0:
-		print('************ASSERT ERROR************\n')
-		print(json.dumps(result, indent=4).decode("unicode-escape"))
-		print('************ASSERT ERROR************\n')
-		raise RuntimeError(result)
+	result = diff(actual, expected)
+	for _, item in result.items():
+		for k, v in item.items():
+			if str(k) not in ['$delete']:
+				print('************ASSERT ERROR************\n')
+				print str(k), v
+				print('************ASSERT ERROR************\n')
+				raise RuntimeError(result)
 
 def assert_api_call(response, context):
 	if context.text:

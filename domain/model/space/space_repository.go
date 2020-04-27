@@ -29,9 +29,19 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map, paginator *ghost.Pa
 	return spaces
 }
 
-func (this *SpaceRepository) GetForUser(user *dm_account.User, filters ghost.Map, paginator *ghost.Paginator) []*Space{
+func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters ghost.Map, paginator *ghost.Paginator) []*Space{
 	filters["user_id"] = user.Id
 	return this.GetByFilters(filters, paginator)
+}
+
+func (this *SpaceRepository) GetForUser(user *dm_account.User, spaceId int) *Space{
+	spaces := this.GetByFilters(ghost.Map{
+		"user_id": user.Id,
+	}, nil)
+	if len(spaces) > 0{
+		return spaces[0]
+	}
+	return nil
 }
 
 func NewSpaceRepository(ctx context.Context) *SpaceRepository{
