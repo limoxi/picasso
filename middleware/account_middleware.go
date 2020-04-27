@@ -16,7 +16,7 @@ func (this *AccountMiddleware) Init(){
 	ghost.Info("AccountMiddleware loaded")
 }
 
-func (this *AccountMiddleware)  (ctx *gin.Context){
+func (this *AccountMiddleware) PreRequest (ctx *gin.Context){
 	if ghost_utils.NewListerFromStrings([]string{"/user/logined_user/"}).Has(ctx.FullPath()){
 		return
 	}
