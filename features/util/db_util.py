@@ -41,8 +41,15 @@ class SQLService(object):
 			raise Exception
 		return cls(db)
 
-	def execute_sql(self, sql):
-		cursor = self.__db.execute_sql(sql)
+	def execute_sql(self, sql, for_test=False):
+		cursor = None
+		for s in sql.split(';'):
+			s = s.strip()
+			if not s:
+				continue
+			print (u'execute sql: {}'.format(s))
+			if not for_test:
+				cursor = self.__db.execute_sql(s)
 		return cursor
 
 	def set_foreign_key_checks(self, value=True):

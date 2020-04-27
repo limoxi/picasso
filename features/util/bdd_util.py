@@ -32,6 +32,8 @@ def login(username, **kwargs):
 
 
 def assert_json(expected, actual):
+	print expected
+	print actual
 	result = diff(expected, actual)
 	if len(result) > 0:
 		print('************ASSERT ERROR************\n')

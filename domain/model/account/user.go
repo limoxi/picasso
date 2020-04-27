@@ -41,7 +41,7 @@ func NewUserFromDbModel(ctx context.Context, dbModel *m_user.User) *User{
 
 func NewUserFromId(ctx context.Context, id int) *User{
 	inst := &User{}
-	inst.Id = int(id)
+	inst.Id = id
 	inst.SetCtx(ctx)
 	return inst
 }

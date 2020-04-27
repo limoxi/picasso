@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/limoxi/ghost"
 	ghost_utils "github.com/limoxi/ghost/utils"
-	"iteamdo/common/util"
-	dm_account "iteamdo/domain/model/account"
+	"picasso/common/util"
+	dm_account "picasso/domain/model/account"
 )
 
 type AccountMiddleware struct{
@@ -16,11 +16,12 @@ func (this *AccountMiddleware) Init(){
 	ghost.Info("AccountMiddleware loaded")
 }
 
-func (this *AccountMiddleware) PreRequest(ctx *gin.Context){
+func (this *AccountMiddleware)  (ctx *gin.Context){
 	if ghost_utils.NewListerFromStrings([]string{"/user/logined_user/"}).Has(ctx.FullPath()){
 		return
 	}
 	token := ctx.GetHeader("Authorization")
+	ghost.Debug(token, "+==========")
 	if token != ""{
 		data := util.DecodeJwtToken(token)
 		userId := 0

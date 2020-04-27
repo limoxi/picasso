@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5c07a126-1b4d-429a-8c85-bc2c55218540" name="Default Changelist" comment="" />
+    <list default="true" id="5c07a126-1b4d-429a-8c85-bc2c55218540" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/db/db_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/db/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/init.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/db/user/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/common/db/user/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/domain/model/account/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/domain/model/account/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/steps/user/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/steps/user/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/steps/user/user_steps.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/steps/user/user_steps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/util/bdd_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/util/bdd_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/util/db_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/util/db_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/features/util/user_util.py" beforeDir="false" afterPath="$PROJECT_DIR$/features/util/user_util.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/middleware/account_middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/middleware/account_middleware.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,15 +29,22 @@
     </option>
   </component>
   <component name="GOROOT" path="D:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
   <component name="ProjectId" id="1awe9qbdeupiYMDg9j8fZ9kJkf0" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
@@ -31,15 +52,21 @@
     <property name="configurable.Module.GOPATH.is.expanded" value="false" />
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/domain/model/space" />
     <property name="settings.editor.selected.configurable" value="go.vgo" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\workspace\me\picasso" />
+      <recent name="E:\workspace\me\ghost" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\workspace\me\picasso\domain\model\space" />
+      <recent name="E:\workspace\me\picasso\api\space" />
       <recent name="E:\workspace\me\picasso" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build picasso">
     <configuration name="go build picasso" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="picasso" />
       <working_directory value="$PROJECT_DIR$/" />
@@ -50,6 +77,34 @@
       <directory value="$PROJECT_DIR$/" />
       <method v="2" />
     </configuration>
+    <configuration name="TestDb in picasso" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="picasso" />
+      <working_directory value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="picasso" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestDb$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestDb in picasso/common/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="picasso" />
+      <working_directory value="$PROJECT_DIR$/common/db" />
+      <framework value="gotest" />
+      <kind value="PACKAGE" />
+      <package value="picasso/common/db" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/" />
+      <pattern value="^TestDb$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Test.TestDb in picasso" />
+        <item itemvalue="Go Test.TestDb in picasso/common/db" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
@@ -68,22 +123,22 @@
       <screen x="62" y="0" width="1474" height="864" />
     </state>
     <state x="619" y="210" key="FileChooserDialogImpl/62.0.1474.864@62.0.1474.864" timestamp="1587651989074" />
-    <state width="1431" height="252" key="GridCell.Tab.0.bottom" timestamp="1587657765340">
+    <state width="1431" height="298" key="GridCell.Tab.0.bottom" timestamp="1587917923974">
       <screen x="62" y="0" width="1474" height="864" />
     </state>
-    <state width="1431" height="252" key="GridCell.Tab.0.bottom/62.0.1474.864@62.0.1474.864" timestamp="1587657765340" />
-    <state width="1431" height="252" key="GridCell.Tab.0.center" timestamp="1587657765340">
+    <state width="1431" height="298" key="GridCell.Tab.0.bottom/62.0.1474.864@62.0.1474.864" timestamp="1587917923974" />
+    <state width="1431" height="298" key="GridCell.Tab.0.center" timestamp="1587917923973">
       <screen x="62" y="0" width="1474" height="864" />
     </state>
-    <state width="1431" height="252" key="GridCell.Tab.0.center/62.0.1474.864@62.0.1474.864" timestamp="1587657765340" />
-    <state width="1431" height="252" key="GridCell.Tab.0.left" timestamp="1587657765340">
+    <state width="1431" height="298" key="GridCell.Tab.0.center/62.0.1474.864@62.0.1474.864" timestamp="1587917923973" />
+    <state width="1431" height="298" key="GridCell.Tab.0.left" timestamp="1587917923973">
       <screen x="62" y="0" width="1474" height="864" />
     </state>
-    <state width="1431" height="252" key="GridCell.Tab.0.left/62.0.1474.864@62.0.1474.864" timestamp="1587657765340" />
-    <state width="1431" height="252" key="GridCell.Tab.0.right" timestamp="1587657765340">
+    <state width="1431" height="298" key="GridCell.Tab.0.left/62.0.1474.864@62.0.1474.864" timestamp="1587917923973" />
+    <state width="1431" height="298" key="GridCell.Tab.0.right" timestamp="1587917923974">
       <screen x="62" y="0" width="1474" height="864" />
     </state>
-    <state width="1431" height="252" key="GridCell.Tab.0.right/62.0.1474.864@62.0.1474.864" timestamp="1587657765340" />
+    <state width="1431" height="298" key="GridCell.Tab.0.right/62.0.1474.864@62.0.1474.864" timestamp="1587917923974" />
     <state x="220" y="0" key="SettingsEditor" timestamp="1587651166578">
       <screen x="62" y="0" width="1474" height="864" />
     </state>

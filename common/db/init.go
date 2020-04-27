@@ -2,6 +2,8 @@ package db
 
 import (
 	"github.com/limoxi/ghost"
+	_ "picasso/common/db/space"
+	_ "picasso/common/db/user"
 )
 
 func init(){

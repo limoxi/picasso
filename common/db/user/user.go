@@ -12,7 +12,7 @@ type User struct {
 }
 
 func (User) TableName() string{
-	return "user_user"
+	return "auth_user"
 }
 
 func init(){

@@ -1,1 +1,2 @@
-from features.steps.user import user_steps
+import user_steps
+import space_steps
