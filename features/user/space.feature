@@ -33,11 +33,10 @@ Feature: 用户空间管理
 		Given zhang3登录系统
 		When 'zhang3'创建空间'张小三'
 		And 'zhang3'创建空间'张小四'
-		And 'zhang3'邀请'li4'成为空间'张小三'的成员
-		And 'zhang3'邀请'wang5'成为空间'张小四'的成员
-		And 'zhang3'邀请'zhao6'成为空间'张小四'的成员
+		And 'zhang3'为空间'张小三'生成邀请码'xxx1'
+		And 'zhang3'为空间'张小四'生成邀请码'xxx2'
 		Given li4登录系统
-		When 'li4'同意成为'zhang3'的空间'张小三'的成员
+		When 'li4'使用邀请码'xxx1'加入空间'张小三'
 		Then 'li4'可以查看自己的空间列表
 		"""
 		[{
@@ -45,10 +44,12 @@ Feature: 用户空间管理
 		}]
 		"""
 		Given zhao6登录系统
-		When 'zhao6'拒绝成为'zhang3'的空间'张小四'的成员
+		When 'zhao6'使用邀请码'xxx2'加入空间'张小四'
 		Then 'zhao6'可以查看自己的空间列表
 		"""
-		[]
+		[{
+			"name": "张小四"
+		}]
 		"""
 		Given zhang3登录系统
 		Then 'zhang3'可以查看空间'张小三'的成员列表
@@ -64,8 +65,8 @@ Feature: 用户空间管理
 		And 'zhang3'可以查看空间'张小四'的成员列表
 		"""
 		[{
-			"username": "wang5",
-			"status": "invited"
+			"username": "zhao6",
+			"status": "member"
 		}, {
 			"username": "zhang3",
 			"status": "manager"

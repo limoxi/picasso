@@ -44,6 +44,16 @@ func (this *SpaceRepository) GetForUser(user *dm_account.User, spaceId int) *Spa
 	return nil
 }
 
+func (this *SpaceRepository) GetById(spaceId int) *Space{
+	spaces := this.GetByFilters(ghost.Map{
+		"id": spaceId,
+	}, nil)
+	if len(spaces) > 0{
+		return spaces[0]
+	}
+	return nil
+}
+
 func NewSpaceRepository(ctx context.Context) *SpaceRepository{
 	inst := new(SpaceRepository)
 	inst.SetCtx(ctx)

@@ -1,22 +1,29 @@
 # coding: utf8
 
 import json
-
 from behave import *
 
 from features import settings
 from features.util import user_util, bdd_util
-
 from features.util.db_util import SQLService
 
 
-def get_space_id(username, space_name):
-	user_id = user_util.get_user_id(username)
+def get_space_id(space_name, username=None):
 	sql = """
-		select * from space_space where user_id={} and name='{}'; 
-	""".format(user_id, space_name)
+		select * from space_space where name='{}' 
+	""".format(space_name)
+	if username is not None:
+		user_id = user_util.get_user_id(username)
+		sql += " and user_id={} ".format(user_id)
 	record = SQLService.use().execute_sql(sql).fetchone()
 	return record[0]
+
+def update_space_code(space_id, code):
+	sql = """
+		update space_space set code='{}' 
+		where id={};
+	""".format(code, space_id)
+	SQLService.use().execute_sql(sql)
 
 @when(u"'{username}'创建空间'{space_name}'")
 def step_impl(context, username, space_name):
@@ -32,25 +39,27 @@ def step_impl(context, username):
 	actual = response['data']['spaces']
 	bdd_util.assert_json(expected, actual)
 
-@when(u"'{username}'邀请'{member_name}'成为空间'{space_name}'的成员")
-def step_impl(context, username, member_name, space_name):
-	response = context.client.put('space.invited_member', {
-		"space_id": get_space_id(username, space_name),
-		"user_id": user_util.get_user_id(member_name)
+@when(u"'{username}'为空间'{space_name}'生成邀请码'{code}'")
+def step_impl(context, username, space_name, code):
+	space_id = get_space_id(space_name, username)
+	response = context.client.put('space.code', {
+		"space_id": space_id,
 	})
 	bdd_util.assert_api_call_success(response)
+	update_space_code(space_id, code)
 
-@when(u"'{member_name}'同意成为'{username}'的空间'{space_name}'的成员")
-def step_impl(context, member_name, username, space_name):
-	response = context.client.put('space.passed_inviting', {
-		"space_id": get_space_id(username, space_name)
+@when(u"'{member_name}'使用邀请码'{code}'加入空间'{space_name}'")
+def step_impl(context, member_name, code, space_name):
+	response = context.client.put('space.member', {
+		"space_id": get_space_id(space_name),
+		"code": code
 	})
 	bdd_util.assert_api_call_success(response)
 
 @when(u"'{member_name}'拒绝成为'{username}'的空间'{space_name}'的成员")
 def step_impl(context, member_name, username, space_name):
 	response = context.client.put('space.rejected_inviting', {
-		"space_id": get_space_id(username, space_name)
+		"space_id": get_space_id(space_name, username)
 	})
 	bdd_util.assert_api_call_success(response)
 
@@ -58,7 +67,7 @@ def step_impl(context, member_name, username, space_name):
 def step_impl(context, username, space_name):
 	expected = json.loads(context.text)
 	response = context.client.get('space.members', {
-		"space_id": get_space_id(username, space_name)
+		"space_id": get_space_id(space_name, username)
 	})
 	actual = response['data']['members']
 	bdd_util.assert_list(expected, actual)
