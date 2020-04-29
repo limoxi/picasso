@@ -9,8 +9,8 @@ from features.util.db_util import SQLService
 
 
 def get_space_id(space_name, username=None):
-	sql = """
-		select * from space_space where name='{}' 
+	sql = u"""
+		select id from space_space where name='{}' 
 	""".format(space_name)
 	if username is not None:
 		user_id = user_util.get_user_id(username)
@@ -53,13 +53,6 @@ def step_impl(context, member_name, code, space_name):
 	response = context.client.put('space.member', {
 		"space_id": get_space_id(space_name),
 		"code": code
-	})
-	bdd_util.assert_api_call_success(response)
-
-@when(u"'{member_name}'拒绝成为'{username}'的空间'{space_name}'的成员")
-def step_impl(context, member_name, username, space_name):
-	response = context.client.put('space.rejected_inviting', {
-		"space_id": get_space_id(space_name, username)
 	})
 	bdd_util.assert_api_call_success(response)
 

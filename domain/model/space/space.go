@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/limoxi/ghost"
 	"math/rand"
+	"picasso/common"
 	m_space "picasso/common/db/space"
 	dm_account "picasso/domain/model/account"
 	"strconv"
@@ -84,6 +85,7 @@ func NewSpaceForUser(ctx context.Context, user *dm_account.User, name string) *S
 	dbModel := &m_space.Space{
 		Name: name,
 		UserId: user.Id,
+		CodeExpiredAt: common.DEFAULT_TIME,
 	}
 	result := ghost.GetDB().Create(dbModel)
 	if err := result.Error; err != nil{

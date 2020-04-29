@@ -11,7 +11,7 @@ type Space struct {
 	Name string `gorm:"size:128"`
 	UserId int
 	Code string `gorm:"size:64;default('')"`
-	CodeExpiredAt time.Time `gorm:"null"`
+	CodeExpiredAt time.Time
 }
 func (Space) TableName() string{
 	return "space_space"

@@ -6,7 +6,7 @@ import logging
 def diff(expected, actual, err_msg=None):
 	err_msg = err_msg or []
 	if isinstance(expected, dict):
-		for k, v in expected:
+		for k, v in expected.items():
 			if not actual.has_key(k):
 				err_msg.append("keyword missing: e.{}".format(k))
 			if v != actual[k]:
