@@ -10,7 +10,7 @@ type Code struct {
 	ghost.ApiTemplate
 }
 
-func (this *Code) GetResource() string{
+func (this *Code) Resource() string{
 	return "space.code"
 }
 

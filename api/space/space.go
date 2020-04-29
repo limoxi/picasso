@@ -14,7 +14,7 @@ type spacePutParams struct {
 	Name string `form:"name"`
 }
 
-func (this *Space) GetResource() string{
+func (this *Space) Resource() string{
 	return "space.space"
 }
 

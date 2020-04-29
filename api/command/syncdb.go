@@ -9,7 +9,7 @@ type Syncdb struct {
 
 }
 
-func (this *Syncdb) GetResource() string{
+func (this *Syncdb) Resource() string{
 	return "command.syncdb"
 }
 

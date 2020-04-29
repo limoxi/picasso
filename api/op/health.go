@@ -9,7 +9,7 @@ type Health struct {
 
 }
 
-func (this *Health) GetResource() string{
+func (this *Health) Resource() string{
 	return "op.health"
 }
 

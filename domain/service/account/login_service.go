@@ -7,7 +7,7 @@ import (
 )
 
 type LoginService struct{
-	ghost.DomainObject
+	ghost.DomainService
 }
 
 type RegisterParams struct{

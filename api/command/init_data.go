@@ -9,7 +9,7 @@ type InitData struct {
 
 }
 
-func (this *InitData) GetResource() string{
+func (this *InitData) Resource() string{
 	return "command.init_data"
 }
 

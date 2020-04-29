@@ -17,7 +17,7 @@ type spacesGetParams struct {
 	PageSize int `form:"page_size"`
 }
 
-func (this *Spaces) GetResource() string{
+func (this *Spaces) Resource() string{
 	return "space.spaces"
 }
 
@@ -26,8 +26,10 @@ func (this *Spaces) Get() ghost.Response{
 	this.Bind(&params)
 	ctx := this.GetCtx()
 	user := dm_account.GetUserFromCtx(ctx)
+	spaceRepository := dm_space.NewSpaceRepository(ctx)
 	paginator := ghost.NewPaginator(params.CurPage, params.PageSize)
-	spaces := dm_space.NewSpaceRepository(ctx).GetSpacesForUser(user, ghost.Map{}, paginator)
+	spaceRepository.SetPaginator(paginator)
+	spaces := spaceRepository.GetSpacesForUser(user, ghost.Map{})
 	return ghost.NewJsonResponse(ghost.Map{
 		"spaces": dm_space.NewSpaceEncodeService(ctx).EncodeMany(spaces),
 		"page_info": paginator.ToResultMap(),

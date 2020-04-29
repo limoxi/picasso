@@ -10,7 +10,7 @@ type LoginedUser struct {
 	ghost.ApiTemplate
 }
 
-func (this *LoginedUser) GetResource() string{
+func (this *LoginedUser) Resource() string{
 	return "user.logined_user"
 }
 

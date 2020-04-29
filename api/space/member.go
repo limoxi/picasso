@@ -15,7 +15,7 @@ type spaceMemberPutParams struct {
 	Code string `form:"code"`
 }
 
-func (this *Member) GetResource() string{
+func (this *Member) Resource() string{
 	return "space.member"
 }
 
