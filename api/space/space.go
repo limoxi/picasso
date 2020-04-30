@@ -11,7 +11,7 @@ type Space struct {
 }
 
 type spacePutParams struct {
-	Name string `form:"name"`
+	Name string `json:"name"`
 }
 
 func (this *Space) Resource() string{

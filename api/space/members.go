@@ -6,21 +6,20 @@ import (
 	dm_space "picasso/domain/model/space"
 )
 
-type Member struct {
+type Members struct {
 	ghost.ApiTemplate
 }
 
-type spaceMemberPutParams struct {
-	SpaceId int `json:"space_id"`
-	Code string `json:"code"`
+type spaceMembersGetParams struct {
+	SpaceId int `form:"space_id"`
 }
 
-func (this *Member) Resource() string{
-	return "space.member"
+func (this *Members) Resource() string{
+	return "space.members"
 }
 
-func (this *Member) Put() ghost.Response{
-	var params spaceMemberPutParams
+func (this *Members) Get() ghost.Response{
+	var params spaceMembersGetParams
 	this.Bind(&params)
 	ctx := this.GetCtx()
 	user := dm_account.GetUserFromCtx(ctx)
@@ -28,7 +27,10 @@ func (this *Member) Put() ghost.Response{
 	if space == nil{
 		panic(ghost.NewBusinessError("空间不存在"))
 	}
-	space.AddMember(user, params.Code)
+	if !space.HasMember(user){
+		panic(ghost.NewBusinessError("当前用户没有权限"))
+	}
+	space.GetMembers()
 	return ghost.NewJsonResponse(ghost.Map{})
 }
 

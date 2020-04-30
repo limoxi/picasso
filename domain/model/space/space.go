@@ -23,13 +23,14 @@ func (this *Space) checkCode(code string){
 	if code != this.Code{
 		panic(ghost.NewBusinessError("无效的邀请码"))
 	}
+	ghost.Info(time.Now(), this.CodeExpiredAt, time.Now().After(this.CodeExpiredAt))
 	if time.Now().After(this.CodeExpiredAt){
 		panic(ghost.NewBusinessError("邀请码已过期"))
 	}
 }
 
-func (this *Space) AddUser(user *dm_account.User, code string){
-	if this.HasUser(user){
+func (this *Space) AddMember(member *dm_account.User, code string){
+	if this.HasMember(member){
 		panic(ghost.NewBusinessError("用户已加入"))
 	}
 
@@ -37,17 +38,17 @@ func (this *Space) AddUser(user *dm_account.User, code string){
 
 	if err := ghost.GetDB().Create(&m_space.SpaceHasUser{
 		SpaceId: this.Id,
-		UserId: user.Id,
+		UserId: member.Id,
 		IsManager: false,
 	}).Error; err != nil{
 		ghost.Panic(err)
 	}
 }
 
-func (this *Space) HasUser(user *dm_account.User) bool{
+func (this *Space) HasMember(member *dm_account.User) bool{
 	filters := ghost.Map{
 		"space_id": this.Id,
-		"user_id": user.Id,
+		"user_id": member.Id,
 	}
 	var count int
 	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(filters).Count(&count)
@@ -55,6 +56,23 @@ func (this *Space) HasUser(user *dm_account.User) bool{
 		panic(err)
 	}
 	return count > 0
+}
+
+// GetMembers 获取成员
+func (this *Space) GetMembers() []*dm_account.User{
+	filters := ghost.Map{
+		"space_id": this.Id,
+	}
+	var dbModels []*m_space.SpaceHasUser
+	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(filters).Find(&dbModels)
+	if err := result.Error; err != nil{
+		panic(err)
+	}
+	userIds := make([]int, 0, len(dbModels))
+	for _, dbModel := range dbModels{
+		userIds = append(userIds, dbModel.UserId)
+	}
+	users := dm_account.NewUserRepository(this.GetCtx()).GetByIds(userIds)
 }
 
 // GenCode 随机生成4位数字邀请码
@@ -76,8 +94,7 @@ func (this *Space) GenCode() string{
 func NewSpaceFromDbModel(ctx context.Context, dbModel *m_space.Space) *Space{
 	inst := new(Space)
 	inst.SetCtx(ctx)
-	inst.Id = dbModel.Id
-	inst.Name = dbModel.Name
+	inst.NewFromDbModel(inst, dbModel)
 	return inst
 }
 

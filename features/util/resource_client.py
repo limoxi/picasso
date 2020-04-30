@@ -88,7 +88,7 @@ class Resource(object):
 			else:
 				fn = getattr(requests, method)
 				self.headers.update({
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json;charset=utf-8'
 				})
 				resp = fn(url, data=json.dumps(params), timeout=DEFAULT_TIMEOUT, headers=self.headers)
 			self.__resp = resp

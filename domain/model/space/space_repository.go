@@ -30,12 +30,25 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
 }
 
 func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters ghost.Map) []*Space{
-	filters["user_id"] = user.Id
-	return this.GetByFilters(filters)
+	var dbModels []*m_space.SpaceHasUser
+	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(ghost.Map{
+		"user_id": user.Id,
+	}).Find(&dbModels)
+	if err := result.Error; err != nil{
+		panic(err)
+	}
+	spaceIds := make([]int, 0, len(dbModels))
+	for _, dbModel := range dbModels{
+		spaceIds = append(spaceIds, dbModel.SpaceId)
+	}
+	return this.GetByFilters(ghost.Map{
+		"id__in": spaceIds,
+	})
 }
 
 func (this *SpaceRepository) GetForUser(user *dm_account.User, spaceId int) *Space{
 	spaces := this.GetByFilters(ghost.Map{
+		"id": spaceId,
 		"user_id": user.Id,
 	})
 	if len(spaces) > 0{

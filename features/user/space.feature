@@ -28,7 +28,7 @@ Feature: 用户空间管理
 		}]
 		"""
 
-	@picasso @space
+	@picasso @space @1
 	Scenario: 2、空间管理员可以邀请其他用户成为空间一员
 		Given zhang3登录系统
 		When 'zhang3'创建空间'张小三'

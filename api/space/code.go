@@ -15,7 +15,7 @@ func (this *Code) Resource() string{
 }
 
 type spaceCodeParams struct {
-	SpaceId int `form:"space_id"`
+	SpaceId int `json:"space_id"`
 }
 
 // Put 生成邀请码

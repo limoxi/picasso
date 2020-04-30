@@ -17,15 +17,16 @@ func (Space) TableName() string{
 	return "space_space"
 }
 
-type SpaceHasUser struct {
+type SpaceMember struct {
 	ghost.BaseModel
 
 	SpaceId int
 	UserId int
 	IsManager bool
+	NickName string `gorm:"size:128;default('')"`
 }
-func (SpaceHasUser) TableName() string{
-	return "space_has_user"
+func (SpaceMember) TableName() string{
+	return "space_member"
 }
 
 func init(){
