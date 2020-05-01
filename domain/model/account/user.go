@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/limoxi/ghost"
-	m_user "picasso/common/db/user"
 	"picasso/common/util"
+	db_user "picasso/db/user"
 	"time"
 )
 
@@ -19,7 +19,7 @@ type User struct{
 }
 
 func (this *User) Update(nickname, avatar string){
-	result := ghost.GetDB().Model(&m_user.User{}).Where("id=?", this.Id).Update(ghost.Map{
+	result := ghost.GetDB().Model(&db_user.User{}).Where("id=?", this.Id).Update(ghost.Map{
 		"nickname": nickname,
 		"avatar": avatar,
 	})
@@ -32,7 +32,7 @@ func (this *User) UpdatePassword(oldPwd, newPwd string) {
 
 }
 
-func NewUserFromDbModel(ctx context.Context, dbModel *m_user.User) *User{
+func NewUserFromDbModel(ctx context.Context, dbModel *db_user.User) *User{
 	inst := &User{}
 	inst.SetCtx(ctx)
 	inst.NewFromDbModel(inst, dbModel)

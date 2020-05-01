@@ -9,8 +9,8 @@ def diff(expected, actual, err_msg=None):
 		for k, v in expected.items():
 			if not actual.has_key(k):
 				err_msg.append("keyword missing: e.{}".format(k))
-			if v != actual[k]:
-				err_msg.append("invalid value: e.{}={} => a.{}={}", k, v, k, actual[k])
+			if actual.has_key(k) and v != actual[k]:
+				err_msg.append("invalid value: e.{}={} => a.{}={}".format(k, v, k, actual[k]))
 
 	elif isinstance(expected, list):
 		if len(expected) > len(actual):

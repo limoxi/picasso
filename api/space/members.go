@@ -30,10 +30,13 @@ func (this *Members) Get() ghost.Response{
 	if !space.HasMember(user){
 		panic(ghost.NewBusinessError("当前用户没有权限"))
 	}
-	space.GetMembers()
-	return ghost.NewJsonResponse(ghost.Map{})
+
+	members := space.GetMembers()
+	return ghost.NewJsonResponse(ghost.Map{
+		"members": dm_space.NewSpaceEncodeService(ctx).EncodeManyMembers(members),
+	})
 }
 
 func init(){
-	ghost.RegisterApi(&Member{})
+	ghost.RegisterApi(&Members{})
 }

@@ -28,7 +28,7 @@ Feature: 用户空间管理
 		}]
 		"""
 
-	@picasso @space @1
+	@picasso @space
 	Scenario: 2、空间管理员可以邀请其他用户成为空间一员
 		Given zhang3登录系统
 		When 'zhang3'创建空间'张小三'
@@ -55,20 +55,20 @@ Feature: 用户空间管理
 		Then 'zhang3'可以查看空间'张小三'的成员列表
 		"""
 		[{
-			"username": "li4",
-			"status": "member"
+			"nick_name": "li4",
+			"is_manager": false
 		}, {
-			"username": "zhang3",
-			"status": "manager"
+			"nick_name": "zhang3",
+			"is_manager": true
 		}]
 		"""
 		And 'zhang3'可以查看空间'张小四'的成员列表
 		"""
 		[{
-			"username": "zhao6",
-			"status": "member"
+			"nick_name": "zhao6",
+			"is_manager": false
 		}, {
-			"username": "zhang3",
-			"status": "manager"
+			"nick_name": "zhang3",
+			"is_manager": true
 		}]
 		"""

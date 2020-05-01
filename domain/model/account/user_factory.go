@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	m_user "picasso/common/db/user"
+	db_user "picasso/db/user"
 )
 
 type UserFactory struct {
@@ -12,7 +12,7 @@ type UserFactory struct {
 
 // Create
 func (*UserFactory) Create(user *User) *User{
-	dbModel := &m_user.User{
+	dbModel := &db_user.User{
 		Phone: user.Phone,
 		Password: user.Password,
 	}

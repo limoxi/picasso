@@ -5,7 +5,7 @@ import (
 	"github.com/limoxi/ghost"
 	"math/rand"
 	"picasso/common"
-	m_space "picasso/common/db/space"
+	db_space "picasso/db/space"
 	dm_account "picasso/domain/model/account"
 	"strconv"
 	"time"
@@ -36,7 +36,7 @@ func (this *Space) AddMember(member *dm_account.User, code string){
 
 	this.checkCode(code)
 
-	if err := ghost.GetDB().Create(&m_space.SpaceHasUser{
+	if err := ghost.GetDB().Create(&db_space.SpaceMember{
 		SpaceId: this.Id,
 		UserId: member.Id,
 		IsManager: false,
@@ -51,7 +51,7 @@ func (this *Space) HasMember(member *dm_account.User) bool{
 		"user_id": member.Id,
 	}
 	var count int
-	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(filters).Count(&count)
+	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(filters).Count(&count)
 	if err := result.Error; err != nil{
 		panic(err)
 	}
@@ -59,27 +59,28 @@ func (this *Space) HasMember(member *dm_account.User) bool{
 }
 
 // GetMembers 获取成员
-func (this *Space) GetMembers() []*dm_account.User{
+func (this *Space) GetMembers() []*SpaceMember{
 	filters := ghost.Map{
 		"space_id": this.Id,
 	}
-	var dbModels []*m_space.SpaceHasUser
-	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(filters).Find(&dbModels)
+	var dbModels []*db_space.SpaceMember
+	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(filters).Order("-id").Find(&dbModels)
 	if err := result.Error; err != nil{
 		panic(err)
 	}
-	userIds := make([]int, 0, len(dbModels))
+	members := make([]*SpaceMember, 0, len(dbModels))
+	ctx := this.GetCtx()
 	for _, dbModel := range dbModels{
-		userIds = append(userIds, dbModel.UserId)
+		members = append(members, NewSpaceMemberFromDbModel(ctx, dbModel))
 	}
-	users := dm_account.NewUserRepository(this.GetCtx()).GetByIds(userIds)
+	return members
 }
 
 // GenCode 随机生成4位数字邀请码
 func (this *Space) GenCode() string{
 	rand.Seed(time.Now().Unix())
 	code := strconv.Itoa(rand.Intn(8999) + 1000)
-	result := ghost.GetDB().Model(&m_space.Space{}).Where(ghost.Map{
+	result := ghost.GetDB().Model(&db_space.Space{}).Where(ghost.Map{
 		"id": this.Id,
 	}).Update(ghost.Map{
 		"code": code,
@@ -91,7 +92,7 @@ func (this *Space) GenCode() string{
 	return code
 }
 
-func NewSpaceFromDbModel(ctx context.Context, dbModel *m_space.Space) *Space{
+func NewSpaceFromDbModel(ctx context.Context, dbModel *db_space.Space) *Space{
 	inst := new(Space)
 	inst.SetCtx(ctx)
 	inst.NewFromDbModel(inst, dbModel)
@@ -99,14 +100,23 @@ func NewSpaceFromDbModel(ctx context.Context, dbModel *m_space.Space) *Space{
 }
 
 func NewSpaceForUser(ctx context.Context, user *dm_account.User, name string) *Space{
-	dbModel := &m_space.Space{
+	dbModel := &db_space.Space{
 		Name: name,
 		UserId: user.Id,
 		CodeExpiredAt: common.DEFAULT_TIME,
 	}
-	result := ghost.GetDB().Create(dbModel)
+	db := ghost.GetDB()
+	result := db.Create(dbModel)
 	if err := result.Error; err != nil{
 		panic(ghost.NewSystemError(err.Error(), "创建空间失败"))
+	}
+	result = db.Create(&db_space.SpaceMember{
+		SpaceId: dbModel.Id,
+		UserId: user.Id,
+		IsManager: true,
+	})
+	if err := result.Error; err != nil{
+		panic(ghost.NewSystemError(err.Error(), "增加空间成员失败"))
 	}
 	return &Space{
 		Id: dbModel.Id,

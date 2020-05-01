@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/limoxi/ghost"
-	m_space "picasso/common/db/space"
+	db_space "picasso/db/space"
 	"testing"
 )
 
 func TestFn (t *testing.T){
-	var dbModels []*m_space.Space
-	db := ghost.GetDB().Model(&m_space.Space{}).Where(ghost.Map{
+	var dbModels []*db_space.Space
+	db := ghost.GetDB().Model(&db_space.Space{}).Where(ghost.Map{
 		"id__gt": 0,
 	})
 	paginator := ghost.NewPaginator(2, 3)

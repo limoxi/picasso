@@ -19,7 +19,7 @@ def __clear_app_data():
 	"""
 	sql = """
 		delete from space_space;
-		delete from space_has_user;
+		delete from space_member;
 	"""
 	SQLService.use().execute_sql(sql)
 

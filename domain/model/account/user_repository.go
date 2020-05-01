@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	m_user "picasso/common/db/user"
+	db_user "picasso/db/user"
 )
 
 type UserRepository struct {
@@ -16,12 +16,12 @@ func (*UserRepository) UserExisted(phone string) bool{
 	filters := ghost.Map{
 		"phone": phone,
 	}
-	ghost.GetDB().Model(&m_user.User{}).Where(filters).Count(&count)
+	ghost.GetDB().Model(&db_user.User{}).Where(filters).Count(&count)
 	return count > 0
 }
 
 func (this *UserRepository) GetByFilters(filters ghost.Map) []*User{
-	var dbModels []*m_user.User
+	var dbModels []*db_user.User
 	users := make([]*User, 0)
 
 	result := ghost.GetDB().Where(filters).Find(&dbModels)

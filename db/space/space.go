@@ -31,5 +31,5 @@ func (SpaceMember) TableName() string{
 
 func init(){
 	ghost.RegisterDBModel(&Space{})
-	ghost.RegisterDBModel(&SpaceHasUser{})
+	ghost.RegisterDBModel(&SpaceMember{})
 }

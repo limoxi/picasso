@@ -3,7 +3,7 @@ package space
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	m_space "picasso/common/db/space"
+	db_space "picasso/db/space"
 	dm_account "picasso/domain/model/account"
 )
 
@@ -12,12 +12,12 @@ type SpaceRepository struct {
 }
 
 func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
-	db := ghost.GetDB().Model(&m_space.Space{}).Where(filters)
-	var dbModels []*m_space.Space
+	db := ghost.GetDB().Model(&db_space.Space{}).Where(filters)
+	var dbModels []*db_space.Space
 	if this.Paginator != nil{
 		this.Paginator.Paginate(db)
 	}
-	result := db.Order("id desc").Find(&dbModels)
+	result := db.Order("-id").Find(&dbModels)
 	if err := result.Error; err != nil{
 		panic(err)
 	}
@@ -30,8 +30,8 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
 }
 
 func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters ghost.Map) []*Space{
-	var dbModels []*m_space.SpaceHasUser
-	result := ghost.GetDB().Model(&m_space.SpaceHasUser{}).Where(ghost.Map{
+	var dbModels []*db_space.SpaceMember
+	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(ghost.Map{
 		"user_id": user.Id,
 	}).Find(&dbModels)
 	if err := result.Error; err != nil{

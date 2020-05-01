@@ -63,4 +63,14 @@ def step_impl(context, username, space_name):
 		"space_id": get_space_id(space_name, username)
 	})
 	actual = response['data']['members']
-	bdd_util.assert_list(expected, actual)
+	for member in actual:
+		if member['nick_name'] == '':
+			sql = """
+				select phone from auth_user where id={}
+			""".format(member['user_id'])
+			record = SQLService.use().execute_sql(sql).fetchone()
+			for nick_name, phone in user_util.USERNAME2PHONE.items():
+				if phone == record[0]:
+					member['nick_name'] = nick_name
+					break
+	bdd_util.assert_json(expected, actual)
