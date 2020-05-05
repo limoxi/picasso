@@ -19,7 +19,7 @@ type User struct{
 }
 
 func (this *User) Update(nickname, avatar string){
-	result := ghost.GetDB().Model(&db_user.User{}).Where("id=?", this.Id).Update(ghost.Map{
+	result := ghost.GetDBFromCtx(this.GetCtx()).Model(&db_user.User{}).Where("id=?", this.Id).Update(ghost.Map{
 		"nickname": nickname,
 		"avatar": avatar,
 	})

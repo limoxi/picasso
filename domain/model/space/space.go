@@ -3,8 +3,8 @@ package space
 import (
 	"context"
 	"github.com/limoxi/ghost"
+	ghost_util "github.com/limoxi/ghost/utils"
 	"math/rand"
-	"picasso/common"
 	db_space "picasso/db/space"
 	dm_account "picasso/domain/model/account"
 	"strconv"
@@ -36,7 +36,7 @@ func (this *Space) AddMember(member *dm_account.User, code string){
 
 	this.checkCode(code)
 
-	if err := ghost.GetDB().Create(&db_space.SpaceMember{
+	if err := ghost.GetDBFromCtx(this.GetCtx()).Create(&db_space.SpaceMember{
 		SpaceId: this.Id,
 		UserId: member.Id,
 		IsManager: false,
@@ -51,7 +51,7 @@ func (this *Space) HasMember(member *dm_account.User) bool{
 		"user_id": member.Id,
 	}
 	var count int
-	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(filters).Count(&count)
+	result := ghost.GetDBFromCtx(this.GetCtx()).Model(&db_space.SpaceMember{}).Where(filters).Count(&count)
 	if err := result.Error; err != nil{
 		panic(err)
 	}
@@ -60,16 +60,16 @@ func (this *Space) HasMember(member *dm_account.User) bool{
 
 // GetMembers 获取成员
 func (this *Space) GetMembers() []*SpaceMember{
+	ctx := this.GetCtx()
 	filters := ghost.Map{
 		"space_id": this.Id,
 	}
 	var dbModels []*db_space.SpaceMember
-	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(filters).Order("-id").Find(&dbModels)
+	result := ghost.GetDBFromCtx(ctx).Model(&db_space.SpaceMember{}).Where(filters).Order("-id").Find(&dbModels)
 	if err := result.Error; err != nil{
 		panic(err)
 	}
 	members := make([]*SpaceMember, 0, len(dbModels))
-	ctx := this.GetCtx()
 	for _, dbModel := range dbModels{
 		members = append(members, NewSpaceMemberFromDbModel(ctx, dbModel))
 	}
@@ -80,7 +80,7 @@ func (this *Space) GetMembers() []*SpaceMember{
 func (this *Space) GenCode() string{
 	rand.Seed(time.Now().Unix())
 	code := strconv.Itoa(rand.Intn(8999) + 1000)
-	result := ghost.GetDB().Model(&db_space.Space{}).Where(ghost.Map{
+	result := ghost.GetDBFromCtx(this.GetCtx()).Model(&db_space.Space{}).Where(ghost.Map{
 		"id": this.Id,
 	}).Update(ghost.Map{
 		"code": code,
@@ -103,9 +103,9 @@ func NewSpaceForUser(ctx context.Context, user *dm_account.User, name string) *S
 	dbModel := &db_space.Space{
 		Name: name,
 		UserId: user.Id,
-		CodeExpiredAt: common.DEFAULT_TIME,
+		CodeExpiredAt: ghost_util.DEFAULT_TIME,
 	}
-	db := ghost.GetDB()
+	db := ghost.GetDBFromCtx(ctx)
 	result := db.Create(dbModel)
 	if err := result.Error; err != nil{
 		panic(ghost.NewSystemError(err.Error(), "创建空间失败"))

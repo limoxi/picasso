@@ -11,25 +11,24 @@ type UserRepository struct {
 }
 
 // UserExisted 用户是否存在
-func (*UserRepository) UserExisted(phone string) bool{
+func (this *UserRepository) UserExisted(phone string) bool{
 	count := 0
 	filters := ghost.Map{
 		"phone": phone,
 	}
-	ghost.GetDB().Model(&db_user.User{}).Where(filters).Count(&count)
+	ghost.GetDBFromCtx(this.GetCtx()).Model(&db_user.User{}).Where(filters).Count(&count)
 	return count > 0
 }
 
 func (this *UserRepository) GetByFilters(filters ghost.Map) []*User{
 	var dbModels []*db_user.User
 	users := make([]*User, 0)
-
-	result := ghost.GetDB().Where(filters).Find(&dbModels)
+	ctx := this.GetCtx()
+	result := ghost.GetDBFromCtx(ctx).Where(filters).Find(&dbModels)
 	if err := result.Error; err != nil{
 		ghost.Error(err.Error())
 		return users
 	}
-	ctx := this.GetCtx()
 	for _, dbModel := range dbModels{
 		users = append(users, NewUserFromDbModel(ctx, dbModel))
 	}

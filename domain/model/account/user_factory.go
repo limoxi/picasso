@@ -11,12 +11,12 @@ type UserFactory struct {
 }
 
 // Create
-func (*UserFactory) Create(user *User) *User{
+func (this *UserFactory) Create(user *User) *User{
 	dbModel := &db_user.User{
 		Phone: user.Phone,
 		Password: user.Password,
 	}
-	if err := ghost.GetDB().Create(&dbModel).Error; err != nil{
+	if err := ghost.GetDBFromCtx(this.GetCtx()).Create(&dbModel).Error; err != nil{
 		ghost.Panic(err)
 	}
 	user.Id = dbModel.Id

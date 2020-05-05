@@ -12,7 +12,8 @@ type SpaceRepository struct {
 }
 
 func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
-	db := ghost.GetDB().Model(&db_space.Space{}).Where(filters)
+	ctx := this.GetCtx()
+	db := ghost.GetDBFromCtx(ctx).Model(&db_space.Space{}).Where(filters)
 	var dbModels []*db_space.Space
 	if this.Paginator != nil{
 		this.Paginator.Paginate(db)
@@ -21,7 +22,7 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
 	if err := result.Error; err != nil{
 		panic(err)
 	}
-	ctx := this.GetCtx()
+
 	spaces := make([]*Space, 0)
 	for _, dbModel := range dbModels{
 		spaces = append(spaces, NewSpaceFromDbModel(ctx, dbModel))
@@ -31,7 +32,7 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
 
 func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters ghost.Map) []*Space{
 	var dbModels []*db_space.SpaceMember
-	result := ghost.GetDB().Model(&db_space.SpaceMember{}).Where(ghost.Map{
+	result := ghost.GetDBFromCtx(this.GetCtx()).Model(&db_space.SpaceMember{}).Where(ghost.Map{
 		"user_id": user.Id,
 	}).Find(&dbModels)
 	if err := result.Error; err != nil{
