@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/limoxi/ghost"
-	ds_account "picasso/domain/service/account"
+	bs_account "picasso/business/service/account"
 )
 
 type RegisteredUser struct {
@@ -21,7 +21,7 @@ func (this *RegisteredUser) Put() ghost.Response{
 	this.Bind(params)
 	ctx := this.GetCtx()
 
-	user := ds_account.NewLoginService(ctx).Register(ds_account.RegisterParams{
+	user := bs_account.NewLoginService(ctx).Register(bs_account.RegisterParams{
 		Phone: params.Phone,
 		RawPassword: params.Password,
 	})

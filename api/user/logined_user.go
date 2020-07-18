@@ -3,8 +3,8 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/limoxi/ghost"
-	dm_account "picasso/domain/model/account"
-	ds_account "picasso/domain/service/account"
+	bm_account "picasso/business/model/account"
+	bs_account "picasso/business/service/account"
 )
 
 type LoginedUser struct {
@@ -22,8 +22,8 @@ func (this *LoginedUser) Put() ghost.Response{
 	})
 	this.Bind(params)
 	ctx := this.GetCtx()
-	user := ds_account.NewLoginService(ctx).Login(params.Phone, params.Password)
-	encodedUser := dm_account.NewUserEncodeService(ctx).Encode(user)
+	user := bs_account.NewLoginService(ctx).Login(params.Phone, params.Password)
+	encodedUser := bm_account.NewUserEncodeService(ctx).Encode(user)
 	encodedUser.Token = user.GetJWTToken()
 	ctx.(*gin.Context).Header("Authorization", encodedUser.Token)
 	return ghost.NewJsonResponse(encodedUser)

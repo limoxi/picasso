@@ -5,7 +5,7 @@ import (
 	"github.com/limoxi/ghost"
 	ghost_utils "github.com/limoxi/ghost/utils"
 	"picasso/common/util"
-	dm_account "picasso/domain/model/account"
+	bm_account "picasso/business/model/account"
 )
 
 type AccountMiddleware struct{
@@ -31,7 +31,7 @@ func (this *AccountMiddleware) PreRequest (ctx *gin.Context){
 		case int:
 			userId = data["user_id"].(int)
 		}
-		ctx.Set("user", dm_account.NewUserFromId(ctx, userId))
+		ctx.Set("user", bm_account.NewUserFromId(ctx, userId))
 	}
 }
 

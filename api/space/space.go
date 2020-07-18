@@ -2,8 +2,8 @@ package space
 
 import (
 	"github.com/limoxi/ghost"
-	dm_account "picasso/domain/model/account"
-	dm_space "picasso/domain/model/space"
+	bm_account "picasso/business/model/account"
+	bm_space "picasso/business/model/space"
 )
 
 type Space struct {
@@ -22,8 +22,8 @@ func (this *Space) Put() ghost.Response{
 	var params spacePutParams
 	this.Bind(&params)
 	ctx := this.GetCtx()
-	user := dm_account.GetUserFromCtx(ctx)
-	space := dm_space.NewSpaceForUser(ctx, user, params.Name)
+	user := bm_account.GetUserFromCtx(ctx)
+	space := bm_space.NewSpaceForUser(ctx, user, params.Name)
 	return ghost.NewJsonResponse(ghost.Map{
 		"id": space.Id,
 	})

@@ -5,10 +5,12 @@ import (
 	"time"
 )
 
+const MEDIA_STATUS_SLICE_SAVED = -1
 const MEDIA_STATUS_SAVED = 0
 const MEDIA_STATUS_PENDING = 1
 const MEDIA_STATUS_COMPLETE = 2
 var MEDIA_STATUS2TEXT = map[int]string{
+	MEDIA_STATUS_SLICE_SAVED: "slice_saved",
 	MEDIA_STATUS_SAVED: "saved",
 	MEDIA_STATUS_PENDING: "pending",
 	MEDIA_STATUS_COMPLETE: "complete",

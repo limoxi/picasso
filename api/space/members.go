@@ -2,8 +2,8 @@ package space
 
 import (
 	"github.com/limoxi/ghost"
-	dm_account "picasso/domain/model/account"
-	dm_space "picasso/domain/model/space"
+	bm_account "picasso/business/model/account"
+	bm_space "picasso/business/model/space"
 )
 
 type Members struct {
@@ -22,8 +22,8 @@ func (this *Members) Get() ghost.Response{
 	var params spaceMembersGetParams
 	this.Bind(&params)
 	ctx := this.GetCtx()
-	user := dm_account.GetUserFromCtx(ctx)
-	space := dm_space.NewSpaceRepository(ctx).GetById(params.SpaceId)
+	user := bm_account.GetUserFromCtx(ctx)
+	space := bm_space.NewSpaceRepository(ctx).GetById(params.SpaceId)
 	if space == nil{
 		panic(ghost.NewBusinessError("空间不存在"))
 	}
@@ -33,7 +33,7 @@ func (this *Members) Get() ghost.Response{
 
 	members := space.GetMembers()
 	return ghost.NewJsonResponse(ghost.Map{
-		"members": dm_space.NewSpaceEncodeService(ctx).EncodeManyMembers(members),
+		"members": bm_space.NewSpaceEncodeService(ctx).EncodeManyMembers(members),
 	})
 }
 

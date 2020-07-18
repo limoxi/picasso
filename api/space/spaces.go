@@ -2,8 +2,8 @@ package space
 
 import (
 	"github.com/limoxi/ghost"
-	dm_account "picasso/domain/model/account"
-	dm_space "picasso/domain/model/space"
+	bm_account "picasso/business/model/account"
+	bm_space "picasso/business/model/space"
 )
 
 type Spaces struct {
@@ -25,13 +25,13 @@ func (this *Spaces) Get() ghost.Response{
 	var params spacesGetParams
 	this.Bind(&params)
 	ctx := this.GetCtx()
-	user := dm_account.GetUserFromCtx(ctx)
-	spaceRepository := dm_space.NewSpaceRepository(ctx)
+	user := bm_account.GetUserFromCtx(ctx)
+	spaceRepository := bm_space.NewSpaceRepository(ctx)
 	paginator := ghost.NewPaginator(params.CurPage, params.PageSize)
 	spaceRepository.SetPaginator(paginator)
 	spaces := spaceRepository.GetSpacesForUser(user, ghost.Map{})
 	return ghost.NewJsonResponse(ghost.Map{
-		"spaces": dm_space.NewSpaceEncodeService(ctx).EncodeMany(spaces),
+		"spaces": bm_space.NewSpaceEncodeService(ctx).EncodeMany(spaces),
 		"page_info": paginator.ToResultMap(),
 	})
 }

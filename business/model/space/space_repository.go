@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/limoxi/ghost"
 	db_space "picasso/db/space"
-	dm_account "picasso/domain/model/account"
+	bm_account "picasso/business/model/account"
 )
 
 type SpaceRepository struct {
@@ -30,7 +30,7 @@ func (this *SpaceRepository) GetByFilters(filters ghost.Map) []*Space{
 	return spaces
 }
 
-func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters ghost.Map) []*Space{
+func (this *SpaceRepository) GetSpacesForUser(user *bm_account.User, filters ghost.Map) []*Space{
 	var dbModels []*db_space.SpaceMember
 	result := ghost.GetDBFromCtx(this.GetCtx()).Model(&db_space.SpaceMember{}).Where(ghost.Map{
 		"user_id": user.Id,
@@ -47,7 +47,7 @@ func (this *SpaceRepository) GetSpacesForUser(user *dm_account.User, filters gho
 	})
 }
 
-func (this *SpaceRepository) GetForUser(user *dm_account.User, spaceId int) *Space{
+func (this *SpaceRepository) GetForUser(user *bm_account.User, spaceId int) *Space{
 	spaces := this.GetByFilters(ghost.Map{
 		"id": spaceId,
 		"user_id": user.Id,

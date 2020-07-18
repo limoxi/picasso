@@ -10,7 +10,7 @@ database:
         max_idle_conns: "${DB_MAX_IDLE_CONNS} || 10"
         max_idle_timeout: "${DB_MAX_IDLE_TIMEOUT} || 0"
 web_server:
-    host: 127.0.0.1
+    host: 0.0.0.0
     port: 8881
 cors:
     white_list:

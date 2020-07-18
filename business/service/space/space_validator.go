@@ -3,16 +3,16 @@ package space
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	dm_account "picasso/domain/model/account"
-	dm_space "picasso/domain/model/space"
+	bm_account "picasso/business/model/account"
+	bm_space "picasso/business/model/space"
 )
 
 type SpaceValidator struct {
 	ghost.DomainService
 }
 
-func (this *SpaceValidator) Check(user *dm_account.User, spaceId int) (*dm_space.Space, error){
-	space := dm_space.NewSpaceRepository(this.GetCtx()).GetById(spaceId)
+func (this *SpaceValidator) Check(user *bm_account.User, spaceId int) (*bm_space.Space, error){
+	space := bm_space.NewSpaceRepository(this.GetCtx()).GetById(spaceId)
 	if space != nil{
 		return nil, ghost.NewBusinessError("空间不存在")
 	}
