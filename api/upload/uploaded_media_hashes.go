@@ -4,6 +4,7 @@ import (
 	"github.com/limoxi/ghost"
 	ghost_util "github.com/limoxi/ghost/utils"
 	bs_media "picasso/business/service/media"
+	db_media "picasso/db/media"
 )
 
 type UploadedMediaHashes struct {
@@ -16,6 +17,7 @@ func (this *UploadedMediaHashes) Resource() string{
 
 type uploadedMediaHashesGetParams struct {
 	Hashes string `form:"hashes"`
+	MediaType string `form:"media_type"`
 }
 // 支持秒传，检查hashcode是否已存在
 func (this *UploadedMediaHashes) Get() ghost.Response{
@@ -25,7 +27,7 @@ func (this *UploadedMediaHashes) Get() ghost.Response{
 	var hashList []string
 	ghost_util.Decode(params.Hashes, &hashList)
 	return ghost.NewJsonResponse(
-		bs_media.NewMediaService(ctx).CheckExistenceByHashes(hashList),
+		bs_media.NewMediaService(ctx).CheckExistenceByHashes(db_media.MEDIA_TEXT2TYPE[params.MediaType], hashList),
 	)
 }
 

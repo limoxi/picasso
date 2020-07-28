@@ -17,22 +17,30 @@ import (
 	"strings"
 )
 
+const MAX_MEDIA_SIZE = 32 * 1024 * 1024 // 单个文件最大32m
+
 var STORAGE_ROOT_PATH string
 var IMAGE_STORAGE_PATH string
 var VIDEO_STORAGE_PATH string
 var THUMBNAIL_STORAGE_PATH string
+var MEDIA_TYPE2STORAGE_PATH map[int]string
 
 type UploadParams struct {
 	MediaType int
 	SpaceId int
-	Hash string
+	FileHeaders []*multipart.FileHeader
+	Filename2Hash map[string]string
 }
 
 type SliceUploadParams struct {
-	UploadParams
-	BlobNum int
-	TotalBlobNum int
-	BlobSize int
+	MediaType int
+	SpaceId int
+	Filename string
+	FileHeader *multipart.FileHeader
+	CompleteHash string
+	SliceHash string
+	SliceIndex int
+	TotalSliceCount int
 }
 
 type Uploader struct {
@@ -79,12 +87,12 @@ func (this *Uploader) saveFile(fh *multipart.FileHeader, path string) error{
 	return err
 }
 
-func (this *Uploader) UploadImages(spaceId int, fhs []*multipart.FileHeader){
+func (this *Uploader) UploadMedias(params *UploadParams){
 	ctx := this.GetCtx()
 	db := ghost.GetDBFromCtx(ctx)
 	hashes := make([]string, 0)
 	hash2fh := make(map[string]*multipart.FileHeader)
-	for _, fh := range fhs{
+	for _, fh := range params.FileHeaders{
 		if fh.Size == 0{
 			continue
 		}
@@ -93,12 +101,17 @@ func (this *Uploader) UploadImages(spaceId int, fhs []*multipart.FileHeader){
 			ghost.Error("calc hash code failed")
 			continue
 		}
+		if hash != params.Filename2Hash[fh.Filename]{
+			panic(ghost.NewBusinessError("invalid_hash",
+				fmt.Sprintf("文件hash不一致:%s-%s", params.Filename2Hash[fh.Filename], hash)))
+		}
 		hashes = append(hashes, hash)
 		hash2fh[hash] = fh
 	}
 	var dbModels []*db_media.Media
 	result := db.Model(&db_media.Media{}).Where(ghost.Map{
 		"hash__in":  hashes,
+		"type": params.MediaType,
 	}).Find(&dbModels)
 	if err := result.Error; err != nil{
 		ghost.Error(err)
@@ -115,15 +128,15 @@ func (this *Uploader) UploadImages(spaceId int, fhs []*multipart.FileHeader){
 		}
 		fh := hash2fh[hash]
 
-		storagePath := path.Join(IMAGE_STORAGE_PATH, string(os.PathSeparator), fh.Filename)
+		storagePath := path.Join(MEDIA_TYPE2STORAGE_PATH[params.MediaType], string(os.PathSeparator), fh.Filename)
 		err := this.saveFile(fh, storagePath)
 		if err != nil{
 			ghost.Error(err)
 			continue
 		}
 		result := db.Create(&db_media.Media{
-			SpaceId: spaceId,
-			Type: db_media.MEDIA_TYPE_IMAGE,
+			SpaceId: params.SpaceId,
+			Type: params.MediaType,
 			Hash: hash,
 			StoragePath: storagePath,
 			Status: db_media.MEDIA_STATUS_SAVED,
@@ -162,36 +175,52 @@ func (this *Uploader) slicedMediaIsComplete(dirPath, pureFilename, hash string, 
 }
 
 // 文件格式 blockIndex_blockCount_filename_hash.sliced
-func (this *Uploader) UploadSlicedMedia(spaceId int, filename string, fh *multipart.FileHeader,
-	completeHash, sliceHash string, sliceIndex, totalSliceCount int){
+func (this *Uploader) UploadSlicedMedia(params *SliceUploadParams){
 
-	h, err := this.GetHash(fh)
+	h, err := this.GetHash(params.FileHeader)
 	if err != nil{
 		panic(err)
 	}
-	if sliceHash != h{
-		panic(ghost.NewBusinessError("invalid_hash", fmt.Sprintf("文件hash不一致:%s-%s", sliceHash, h)))
+	if params.SliceHash != h{
+		panic(ghost.NewBusinessError("invalid_hash", fmt.Sprintf("文件hash不一致:%s-%s", params.SliceHash, h)))
 	}
-	pureFileName := strings.Split(filename, ".")[0]
-	tmpDirPath := path.Join(VIDEO_STORAGE_PATH, fmt.Sprintf("tmp_%s_%s", pureFileName, completeHash))
+	pureFileName := strings.Split(params.Filename, ".")[0]
+	tmpDirPath := path.Join(MEDIA_TYPE2STORAGE_PATH[params.MediaType], fmt.Sprintf("tmp_%s_%s", pureFileName, params.CompleteHash))
 	err = os.Mkdir(tmpDirPath, os.ModeDir)
 	if err != nil{
 		ghost.Warn(err)
 	}
 	sliceFilename := fmt.Sprintf("%s_%s_%d_%d.slice",
-		pureFileName, sliceHash, totalSliceCount, sliceIndex)
+		pureFileName, params.SliceHash, params.TotalSliceCount, params.SliceIndex)
 	storagePath := path.Join(tmpDirPath, sliceFilename)
-	err = this.saveFile(fh, storagePath)
+	err = this.saveFile(params.FileHeader, storagePath)
 	if err != nil{
 		ghost.Error(err)
 		panic(err)
 	}
-	result := ghost.GetDBFromCtx(this.GetCtx()).Create(&db_media.Media{
-		SpaceId: spaceId,
-		Type: db_media.MEDIA_TYPE_VIDEO,
-		Hash: completeHash,
+	db := ghost.GetDBFromCtx(this.GetCtx())
+	dbModel := &db_media.Media{
+		SpaceId: params.SpaceId,
+		Type: params.MediaType,
+		Hash: params.CompleteHash,
 		Status: db_media.MEDIA_STATUS_SLICE_SAVED,
 		ShootTime: ghost_util.DEFAULT_TIME,
+	}
+	result := db.Create(dbModel)
+	if err := result.Error; err != nil{
+		ghost.Error(err)
+		panic(err)
+	}
+
+	result = db.Create(&db_media.SlicedMedia{
+		MediaType:   params.MediaType,
+		MediaHash:   params.CompleteHash,
+		SliceHash:   params.SliceHash,
+		SliceIndex:  params.SliceIndex,
+		TotalSliceCount: params.TotalSliceCount,
+		StoragePath: storagePath,
+		Status:      db_media.SLICED_MEDIA_STATUS_SAVED,
+		Size:        params.FileHeader.Size,
 	})
 	if err := result.Error; err != nil{
 		ghost.Error(err)
@@ -205,6 +234,17 @@ func NewUploader(ctx context.Context) *Uploader {
 	return inst
 }
 
+func prepareDirs(){
+	err := os.Mkdir(IMAGE_STORAGE_PATH, os.ModeDir)
+	ghost.Warn(err)
+
+	err = os.Mkdir(VIDEO_STORAGE_PATH, os.ModeDir)
+	ghost.Warn(err)
+
+	err = os.Mkdir(THUMBNAIL_STORAGE_PATH, os.ModeDir)
+	ghost.Warn(err)
+}
+
 func init(){
 	if ghost.OS == "windows"{
 		STORAGE_ROOT_PATH = "E:\\picasso"
@@ -214,4 +254,11 @@ func init(){
 	IMAGE_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "image")
 	VIDEO_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "video")
 	THUMBNAIL_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "thumbnail")
+
+	MEDIA_TYPE2STORAGE_PATH = map[int]string{
+		db_media.MEDIA_TYPE_IMAGE: IMAGE_STORAGE_PATH,
+		db_media.MEDIA_TYPE_VIDEO: VIDEO_STORAGE_PATH,
+	}
+
+	prepareDirs()
 }

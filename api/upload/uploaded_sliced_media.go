@@ -4,8 +4,8 @@ import (
 	"github.com/limoxi/ghost"
 	"mime/multipart"
 	bs_media "picasso/business/service/media"
+	db_media "picasso/db/media"
 
-	//bs_space "picasso/business/service/space"
 )
 
 type UploadedSlicedMedia struct {
@@ -17,6 +17,7 @@ func (this *UploadedSlicedMedia) Resource() string{
 }
 
 type uploadedSlicedMediaPutParams struct {
+	MediaType string `form:"media_type"`
 	SpaceId int `form:"space_id"`
 	Filename string `form:"filename"`
 	CompleteHash string `form:"complete_hash"`
@@ -31,15 +32,16 @@ func (this *UploadedSlicedMedia) Put() ghost.Response{
 	var params uploadedSlicedMediaPutParams
 	this.Bind(&params)
 
-	bs_media.NewUploader(ctx).UploadSlicedMedia(
-		params.SpaceId,
-		params.Filename,
-		params.Slice,
-		params.CompleteHash,
-		params.SliceHash,
-		params.SliceIndex,
-		params.TotalSliceCount,
-	)
+	bs_media.NewUploader(ctx).UploadSlicedMedia(&bs_media.SliceUploadParams{
+		MediaType:       db_media.MEDIA_TEXT2TYPE[params.MediaType],
+		SpaceId:         params.SpaceId,
+		Filename:        params.Filename,
+		FileHeader:      params.Slice,
+		CompleteHash:    params.CompleteHash,
+		SliceHash:       params.SliceHash,
+		SliceIndex:      params.SliceIndex,
+		TotalSliceCount: params.TotalSliceCount,
+	})
 	return ghost.NewJsonResponse(nil)
 }
 
