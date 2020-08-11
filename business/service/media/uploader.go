@@ -13,6 +13,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path"
+	"picasso/common/util"
 	db_media "picasso/db/media"
 	"strings"
 )
@@ -166,8 +167,8 @@ func (this *Uploader) slicedMediaIsComplete(dirPath, pureFilename, hash string, 
 	}
 	lister := ghost_util.NewListerFromStrings(allFilenames)
 	for i:=0; i<totalSliceCount; i++{
-		if !lister.Has(fmt.Sprintf("%s_%s_%d_%d.slice",
-			pureFilename, hash, totalSliceCount, i)){
+		if !lister.Has(fmt.Sprintf("%s_%s_%s.slice",
+			pureFilename, util.WrappedInt(totalSliceCount), util.WrappedInt(i))){
 			return false
 		}
 	}
@@ -190,8 +191,8 @@ func (this *Uploader) UploadSlicedMedia(params *SliceUploadParams){
 	if err != nil{
 		ghost.Warn(err)
 	}
-	sliceFilename := fmt.Sprintf("%s_%s_%d_%d.slice",
-		pureFileName, params.SliceHash, params.TotalSliceCount, params.SliceIndex)
+	sliceFilename := fmt.Sprintf("%s_%s_%s.slice",
+		pureFileName, util.WrappedInt(params.TotalSliceCount), util.WrappedInt(params.SliceIndex))
 	storagePath := path.Join(tmpDirPath, sliceFilename)
 	err = this.saveFile(params.FileHeader, storagePath)
 	if err != nil{
@@ -204,15 +205,23 @@ func (this *Uploader) UploadSlicedMedia(params *SliceUploadParams){
 		Type: params.MediaType,
 		Hash: params.CompleteHash,
 		Status: db_media.MEDIA_STATUS_SLICE_SAVED,
+		StoragePath: tmpDirPath + "___" + params.Filename,
 		ShootTime: ghost_util.DEFAULT_TIME,
 	}
-	result := db.Create(dbModel)
-	if err := result.Error; err != nil{
-		ghost.Error(err)
+	var count int
+	if err = db.Model(&db_media.Media{}).Where(ghost.Map{
+		"hash": params.CompleteHash,
+	}).Count(&count).Error; err != nil{
 		panic(err)
 	}
+	if count == 0{
+		result := db.Create(dbModel)
+		if err := result.Error; err != nil{
+			panic(err)
+		}
+	}
 
-	result = db.Create(&db_media.SlicedMedia{
+	result := db.Create(&db_media.SlicedMedia{
 		MediaType:   params.MediaType,
 		MediaHash:   params.CompleteHash,
 		SliceHash:   params.SliceHash,

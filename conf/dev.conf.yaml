@@ -12,6 +12,7 @@ database:
 web_server:
     host: 0.0.0.0
     port: 8881
+run_mod: rest
 cors:
     white_list:
         - "*"

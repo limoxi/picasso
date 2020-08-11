@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"picasso/common/util"
 	db_media "picasso/db/media"
 	"strings"
 )
@@ -47,8 +48,8 @@ func (this *MediaService) CheckSliceExistenceByHashesBak(completeFilename, compl
 
 	lister := ghost_util.NewListerFromStrings(allFilenames)
 	for _, sliceHash := range sliceHashes{
-		if lister.Has(fmt.Sprintf("%s_%s_%d_%d.slice",
-			pureFileName, sliceHash, totalSliceCount, sliceHash2index[sliceHash])){
+		if lister.Has(fmt.Sprintf("%s_%s_%s.slice",
+			pureFileName, util.WrappedInt(totalSliceCount), util.WrappedInt(sliceHash2index[sliceHash]))){
 			sliceHash2existed[sliceHash] = true
 		}else{
 			sliceHash2existed[sliceHash] = false

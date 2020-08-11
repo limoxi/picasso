@@ -10,9 +10,8 @@ type demoTask struct {
 }
 
 
-func (this *demoTask) Run(taskCtx *cron.TaskContext) error {
+func (this *demoTask) Run(taskCtx *cron.TaskContext) {
 	ghost.Info("[demo_task] run...")
-	return nil
 }
 
 func NewDemoTask() *demoTask{
