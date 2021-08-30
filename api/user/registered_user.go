@@ -2,11 +2,16 @@ package user
 
 import (
 	"github.com/limoxi/ghost"
-	bs_account "picasso/business/service/account"
+	app_account "picasso/business/app/account"
 )
 
 type RegisteredUser struct {
 	ghost.ApiTemplate
+
+	PutParams *struct{
+		Phone string `json:"phone"`
+		Password string `json:"password"`
+	}
 }
 
 func (this *RegisteredUser) Resource() string{
@@ -14,16 +19,10 @@ func (this *RegisteredUser) Resource() string{
 }
 
 func (this *RegisteredUser) Put() ghost.Response{
-	params := new(struct{
-		Phone string `json:"phone"`
-		Password string `json:"password"`
-	})
-	this.Bind(params)
 	ctx := this.GetCtx()
-
-	user := bs_account.NewLoginService(ctx).Register(bs_account.RegisterParams{
-		Phone: params.Phone,
-		RawPassword: params.Password,
+	user := app_account.NewLoginService(ctx).Register(app_account.RegisterParams{
+		Phone: this.PutParams.Phone,
+		RawPassword: this.PutParams.Password,
 	})
 	return ghost.NewJsonResponse(ghost.Map{
 		"id": user.Id,

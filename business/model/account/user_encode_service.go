@@ -7,7 +7,7 @@ import (
 )
 
 type UserEncodeService struct {
-	ghost.DomainObject
+	ghost.DomainService
 }
 
 func (this *UserEncodeService) Encode(user *User) *EncodedUser{

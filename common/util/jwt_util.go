@@ -28,7 +28,7 @@ func DecodeJwtToken(tokenStr string) ghost.Map{
 		return token.Claims.(jwt.MapClaims)["data"].(ghost.Map)
 	}else{
 		if jve, ok := err.(*jwt.ValidationError); ok{
-			if jve.Errors & jwt.ValidationErrorExpired == 1{
+			if jve.Errors == jwt.ValidationErrorExpired{
 				panic(ghost.NewBusinessError("token已过期"))
 			}
 		}

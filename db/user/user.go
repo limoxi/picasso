@@ -6,7 +6,7 @@ import (
 
 // User 用户信息
 type User struct {
-	ghost.BaseModel
+	ghost.BaseDBModel
 	Phone string `gorm:"size:20;unique"`
 	Password string `gorm:"size:128"`
 }

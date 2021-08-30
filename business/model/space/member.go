@@ -3,8 +3,8 @@ package space
 import (
 	"context"
 	"github.com/limoxi/ghost"
+	m_account "picasso/business/model/account"
 	db_space "picasso/db/space"
-	bm_account "picasso/business/model/account"
 )
 
 type SpaceMember struct {
@@ -15,7 +15,7 @@ type SpaceMember struct {
 	SpaceId int
 	IsManager bool
 
-	User *bm_account.User
+	User *m_account.User
 }
 
 func NewSpaceMemberFromDbModel(ctx context.Context, dbModel *db_space.SpaceMember) *SpaceMember{

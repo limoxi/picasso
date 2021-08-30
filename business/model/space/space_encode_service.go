@@ -6,7 +6,7 @@ import (
 )
 
 type SpaceEncodeService struct {
-	ghost.DomainObject
+	ghost.DomainService
 }
 
 func (this *SpaceEncodeService) Encode(space *Space) *EncodedSpace{

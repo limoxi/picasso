@@ -32,7 +32,8 @@ var MEDIA_TEXT2TYPE = map[string]int{
 
 // Media 媒体资源信息
 type Media struct {
-	ghost.BaseModel
+	ghost.BaseDBModel
+
 	SpaceId int
 	Type int
 	Hash string `gorm:"size:128"`
@@ -51,7 +52,8 @@ func (Media) TableName() string{
 
 // SlicedMedia 分片的媒体资源
 type SlicedMedia struct{
-	ghost.BaseModel
+	ghost.BaseDBModel
+
 	MediaType int
 	MediaHash string `gorm:"size:128"`
 	SliceHash string `gorm:"size:128"`

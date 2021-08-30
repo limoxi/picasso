@@ -5,8 +5,8 @@ import (
 	"github.com/limoxi/ghost"
 	ghost_util "github.com/limoxi/ghost/utils"
 	"math/rand"
+	m_account "picasso/business/model/account"
 	db_space "picasso/db/space"
-	bm_account "picasso/business/model/account"
 	"strconv"
 	"time"
 )
@@ -29,7 +29,7 @@ func (this *Space) checkCode(code string){
 	}
 }
 
-func (this *Space) AddMember(member *bm_account.User, code string){
+func (this *Space) AddMember(member *m_account.User, code string){
 	if this.HasMember(member){
 		panic(ghost.NewBusinessError("用户已加入"))
 	}
@@ -41,11 +41,11 @@ func (this *Space) AddMember(member *bm_account.User, code string){
 		UserId: member.Id,
 		IsManager: false,
 	}).Error; err != nil{
-		ghost.Panic(err)
+		panic(err)
 	}
 }
 
-func (this *Space) HasMember(member *bm_account.User) bool{
+func (this *Space) HasMember(member *m_account.User) bool{
 	filters := ghost.Map{
 		"space_id": this.Id,
 		"user_id": member.Id,
@@ -99,7 +99,7 @@ func NewSpaceFromDbModel(ctx context.Context, dbModel *db_space.Space) *Space{
 	return inst
 }
 
-func NewSpaceForUser(ctx context.Context, user *bm_account.User, name string) *Space{
+func NewSpaceForUser(ctx context.Context, user *m_account.User, name string) *Space{
 	dbModel := &db_space.Space{
 		Name: name,
 		UserId: user.Id,

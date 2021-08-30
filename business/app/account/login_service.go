@@ -3,7 +3,7 @@ package account
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	bm_account "picasso/business/model/account"
+	m_account "picasso/business/model/account"
 )
 
 type LoginService struct{
@@ -15,8 +15,8 @@ type RegisterParams struct{
 	RawPassword string
 }
 
-func (this *LoginService) Login(phone, password string) *bm_account.User{
-	user := bm_account.NewUserRepository(this.GetCtx()).GetByPhone(phone)
+func (this *LoginService) Login(phone, password string) *m_account.User{
+	user := m_account.NewUserRepository(this.GetCtx()).GetByPhone(phone)
 	if user == nil{
 		panic(ghost.NewBusinessError("用户不存在"))
 	}
@@ -27,19 +27,19 @@ func (this *LoginService) Login(phone, password string) *bm_account.User{
 }
 
 // Register 注册
-func (this *LoginService) Register(params RegisterParams) *bm_account.User {
+func (this *LoginService) Register(params RegisterParams) *m_account.User {
 	if !this.checkUsername(params.Phone) {
 		panic(ghost.NewBusinessError("该手机号已注册"))
 	}
 	encodedPwd := encodePassword(params.RawPassword)
-	return bm_account.NewUserFactory(this.GetCtx()).Create(&bm_account.User{
+	return m_account.NewUserFactory(this.GetCtx()).Create(&m_account.User{
 		Phone:  params.Phone,
 		Password:  encodedPwd,
 	})
 }
 
 func (this *LoginService) checkUsername(phone string) bool{
-	return !bm_account.NewUserRepository(this.GetCtx()).UserExisted(phone)
+	return !m_account.NewUserRepository(this.GetCtx()).UserExisted(phone)
 }
 
 func NewLoginService(ctx context.Context) *LoginService{

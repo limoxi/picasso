@@ -2,17 +2,17 @@ package space
 
 import (
 	"github.com/limoxi/ghost"
-	bm_account "picasso/business/model/account"
-	bm_space "picasso/business/model/space"
+	m_account "picasso/business/model/account"
+	m_space "picasso/business/model/space"
 )
 
 type Member struct {
 	ghost.ApiTemplate
-}
 
-type spaceMemberPutParams struct {
-	SpaceId int `json:"space_id"`
-	Code string `json:"code"`
+	PutParams *struct{
+		SpaceId int `json:"space_id"`
+		Code string `json:"code"`
+	}
 }
 
 func (this *Member) Resource() string{
@@ -20,15 +20,13 @@ func (this *Member) Resource() string{
 }
 
 func (this *Member) Put() ghost.Response{
-	var params spaceMemberPutParams
-	this.Bind(&params)
 	ctx := this.GetCtx()
-	user := bm_account.GetUserFromCtx(ctx)
-	space := bm_space.NewSpaceRepository(ctx).GetById(params.SpaceId)
+	user := m_account.GetUserFromCtx(ctx)
+	space := m_space.NewSpaceRepository(ctx).GetById(this.PutParams.SpaceId)
 	if space == nil{
 		panic(ghost.NewBusinessError("空间不存在"))
 	}
-	space.AddMember(user, params.Code)
+	space.AddMember(user, this.PutParams.Code)
 	return ghost.NewJsonResponse(ghost.Map{})
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository struct {
-	ghost.DomainObject
+	ghost.DomainService
 }
 
 // UserExisted 用户是否存在

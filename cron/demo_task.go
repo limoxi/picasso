@@ -16,7 +16,7 @@ func (this *demoTask) Run(taskCtx *cron.TaskContext) {
 
 func NewDemoTask() *demoTask{
 	task := new(demoTask)
-	task.CronTask = cron.NewCronTask("demo_task")
+	task.SetName("demo_task")
 	return task
 }
 

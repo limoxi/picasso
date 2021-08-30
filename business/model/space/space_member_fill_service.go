@@ -3,11 +3,11 @@ package space
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	bm_account "picasso/business/model/account"
+	m_account "picasso/business/model/account"
 )
 
 type SpaceMemberFillService struct {
-	ghost.DomainObject
+	ghost.DomainService
 }
 
 func (this *SpaceMemberFillService) FillUser(members []*SpaceMember){
@@ -15,8 +15,8 @@ func (this *SpaceMemberFillService) FillUser(members []*SpaceMember){
 	for _, member := range members{
 		userIds = append(userIds, member.UserId)
 	}
-	users := bm_account.NewUserRepository(this.GetCtx()).GetByIds(userIds)
-	id2user := make(map[int]*bm_account.User)
+	users := m_account.NewUserRepository(this.GetCtx()).GetByIds(userIds)
+	id2user := make(map[int]*m_account.User)
 	for _, user := range users{
 		id2user[user.Id] = user
 	}

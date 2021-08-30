@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	bs_media "picasso/business/service/media"
+	bs_media "picasso/business/app/media"
 	db_media "picasso/db/media"
 	"sort"
 	"strconv"
@@ -131,7 +131,7 @@ func (this *mergeSlicedMediaTask) Run(taskCtx *cron.TaskContext) {
 
 func NewMergeSlicedMediaTask() *mergeSlicedMediaTask{
 	task := new(mergeSlicedMediaTask)
-	task.CronTask = cron.NewCronTask("merge_sliced_media_task")
+	task.SetName("merge_sliced_media_task")
 	return task
 }
 

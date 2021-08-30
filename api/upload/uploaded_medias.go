@@ -4,29 +4,29 @@ import (
 	"github.com/limoxi/ghost"
 	ghost_util "github.com/limoxi/ghost/utils"
 	"mime/multipart"
-	bs_media "picasso/business/service/media"
+	bs_media "picasso/business/app/media"
 	db_media "picasso/db/media"
 )
 
 type UploadedMedias struct {
 	ghost.ApiTemplate
+
+	PutParams *struct{
+		SpaceId int `form:"space_id"`
+		MediaType string `form:"media_type"`
+		Files []*multipart.FileHeader `form:"files[]"`
+		Filename2Hash string `form:"filename2hash"`
+	}
 }
 
 func (this *UploadedMedias) Resource() string{
 	return "upload.uploaded_medias"
 }
 
-type uploadMediasPutParams struct {
-	SpaceId int `form:"space_id"`
-	MediaType string `form:"media_type"`
-	Files []*multipart.FileHeader `form:"files[]"`
-	Filename2Hash string `form:"filename2hash"`
-}
-// 批量上传
+// Put 批量上传
 func (this *UploadedMedias) Put() ghost.Response{
 	ctx := this.GetCtx()
-	var params uploadMediasPutParams
-	this.Bind(&params)
+	params := this.PutParams
 
 	var filename2hash map[string]string
 	ghost_util.Decode(params.Filename2Hash, &filename2hash)

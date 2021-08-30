@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"github.com/limoxi/ghost"
+	bs_media "picasso/business/app/media"
 	db_space "picasso/db/space"
 	"testing"
 )
@@ -17,5 +19,29 @@ func TestFn (t *testing.T){
 	if err := result.Error; err != nil{
 		t.Log(err)
 	}
-	t.Log(paginator.ToResultMap())
+	t.Log(paginator.ToMap())
+}
+
+type A struct {
+	name string
+}
+func (this *A) Set(s string){
+	this.name = s
+}
+
+func(a A) get() string{
+	return a.name
+}
+
+type B struct {
+	*A
+}
+
+func TestFn2(t *testing.T){
+
+	t.Log(16 & 16)
+}
+
+func TestFn1(t *testing.T){
+	bs_media.NewMediaMetadataProcessor(context.Background()).ProcessImage(nil)
 }

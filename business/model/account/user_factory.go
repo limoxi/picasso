@@ -7,18 +7,18 @@ import (
 )
 
 type UserFactory struct {
-	ghost.DomainObject
+	ghost.DomainService
 }
 
-// Create
 func (this *UserFactory) Create(user *User) *User{
 	dbModel := &db_user.User{
 		Phone: user.Phone,
 		Password: user.Password,
 	}
 	if err := ghost.GetDBFromCtx(this.GetCtx()).Create(&dbModel).Error; err != nil{
-		ghost.Panic(err)
+		panic(err)
 	}
+	ghost.Debug("[assert dbModel Id]", dbModel.Id)
 	user.Id = dbModel.Id
 	return user
 }

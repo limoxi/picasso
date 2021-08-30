@@ -6,7 +6,7 @@ import (
 )
 
 type Space struct {
-	ghost.BaseModel
+	ghost.BaseDBModel
 
 	Name string `gorm:"size:128"`
 	UserId int
@@ -18,7 +18,7 @@ func (Space) TableName() string{
 }
 
 type SpaceMember struct {
-	ghost.BaseModel
+	ghost.BaseDBModel
 
 	SpaceId int
 	UserId int

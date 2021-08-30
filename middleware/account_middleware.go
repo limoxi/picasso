@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/limoxi/ghost"
 	ghost_utils "github.com/limoxi/ghost/utils"
+	m_account "picasso/business/model/account"
 	"picasso/common/util"
-	bm_account "picasso/business/model/account"
 )
 
 type AccountMiddleware struct{
@@ -21,7 +21,6 @@ func (this *AccountMiddleware) PreRequest (ctx *gin.Context){
 		return
 	}
 	token := ctx.GetHeader("Authorization")
-	ghost.Debug(token, "+==========")
 	if token != ""{
 		data := util.DecodeJwtToken(token)
 		userId := 0
@@ -31,7 +30,7 @@ func (this *AccountMiddleware) PreRequest (ctx *gin.Context){
 		case int:
 			userId = data["user_id"].(int)
 		}
-		ctx.Set("user", bm_account.NewUserFromId(ctx, userId))
+		ctx.Set("user", m_account.NewUserFromId(ctx, userId))
 	}
 }
 
