@@ -1,8 +1,7 @@
-package media
+package file
 
 type completeSlicedFile struct {
-	Hash string
+	Hash        string
 	StoragePath string
-	Size int64
+	Size        int64
 }
-

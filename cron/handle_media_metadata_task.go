@@ -1,11 +1,10 @@
 package cron
 
 import (
-	"fmt"
 	"github.com/limoxi/ghost"
 	"github.com/limoxi/ghost/utils/cron"
-	bs_media "picasso/business/app/media"
-	db_media "picasso/db/media"
+	bs_file "picasso/business/app/file"
+	db_file "picasso/db/file"
 )
 
 // handleMediaMetadataTask 获取图片&视频的元数据
@@ -15,37 +14,31 @@ type handleMediaMetadataTask struct {
 	cron.Pipe
 }
 
-func (this *handleMediaMetadataTask) RunConsumer(data interface{}, taskCtx *cron.TaskContext){
-	dbModel := data.(*db_media.Media)
-	mediaProcessor := bs_media.NewMediaMetadataProcessor(taskCtx.GetCtx())
-	switch dbModel.Type {
-	case db_media.MEDIA_TYPE_IMAGE:
-		mediaProcessor.ProcessImage(nil)
-	case db_media.MEDIA_TYPE_VIDEO:
-		mediaProcessor.ProcessVideo()
-	default:
-		ghost.Error(fmt.Sprintf("unknown media type: %d", dbModel.Type))
-	}
+func (this *handleMediaMetadataTask) RunConsumer(data interface{}, taskCtx *cron.TaskContext) {
+	dbModel := data.(*db_file.File)
+	mediaProcessor := bs_file.NewMediaMetadataProcessor(taskCtx.GetCtx())
+	mediaProcessor.Process(dbModel)
 }
 
 func (this *handleMediaMetadataTask) Run(taskCtx *cron.TaskContext) {
 	db := taskCtx.GetDb()
-	var dbModels []*db_media.Media
-	result := db.Model(&db_media.Media{}).Where(ghost.Map{
-		"status": db_media.MEDIA_STATUS_SAVED,
+	var dbModels []*db_file.File
+	result := db.Model(&db_file.File{}).Where(ghost.Map{
+		"type":   db_file.FILE_TYPE_MEDIA,
+		"status": db_file.FILE_STATUS_SAVED,
 	}).Limit(10).Find(&dbModels)
-	if err := result.Error; err != nil{
+	if err := result.Error; err != nil {
 		panic(err)
 	}
-	for _, dbModel := range dbModels{
+	for _, dbModel := range dbModels {
 		err := this.AddData(dbModel)
-		if err != nil{
+		if err != nil {
 			break
 		}
 	}
 }
 
-func NewHandleMediaMetadataTask() *handleMediaMetadataTask{
+func NewHandleMediaMetadataTask() *handleMediaMetadataTask {
 	task := new(handleMediaMetadataTask)
 	task.SetName("handle_media_metadata_task")
 	task.Init(100)
