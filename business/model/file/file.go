@@ -1,16 +1,16 @@
-package media
+package file
 
 import (
 	"context"
 	"github.com/limoxi/ghost"
-	db_media "picasso/db/file"
+	db_file "picasso/db/file"
 	"time"
 )
 
-type Media struct {
+type File struct {
 	ghost.DomainModel
 
-	SpaceId       int
+	GroupId       int
 	Type          int
 	SimpleHash    string
 	FullHash      string
@@ -24,8 +24,8 @@ type Media struct {
 	Duration      int
 }
 
-func NewMediaFromDbModel(ctx context.Context, dbModel *db_media.Media) *Media {
-	inst := new(Media)
+func NewFileFromDbModel(ctx context.Context, dbModel *db_file.File) *File {
+	inst := new(File)
 	inst.SetCtx(ctx)
 	inst.NewFromDbModel(inst, dbModel)
 	return inst

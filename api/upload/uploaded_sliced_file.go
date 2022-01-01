@@ -12,7 +12,7 @@ type UploadedSlicedFile struct {
 
 	PutParams *struct {
 		FileType        string                `form:"file_type"`
-		SpaceId         int                   `form:"space_id"`
+		GroupId         int                   `form:"group_id"`
 		Filename        string                `form:"filename"`
 		CompleteHash    string                `form:"complete_hash"`
 		SliceHash       string                `form:"slice_hash"`
@@ -32,7 +32,7 @@ func (this *UploadedSlicedFile) Put() ghost.Response {
 
 	bs_media.NewUploader(ctx).UploadSlicedFile(&bs_media.SliceUploadParams{
 		FileType:        db_file.FILE_TEXT2TYPE[params.FileType],
-		SpaceId:         params.SpaceId,
+		GroupId:         params.GroupId,
 		Filename:        params.Filename,
 		FileHeader:      params.Slice,
 		CompleteHash:    params.CompleteHash,

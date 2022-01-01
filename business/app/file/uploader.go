@@ -13,7 +13,9 @@ import (
 	"mime/multipart"
 	"os"
 	"path"
+	bm_account "picasso/business/model/account"
 	m_account "picasso/business/model/account"
+	"picasso/business/model/file"
 	"picasso/common/util"
 	db_file "picasso/db/file"
 	"strings"
@@ -28,13 +30,13 @@ var FILE_STORAGE_PATH string
 
 type UploadParams struct {
 	User        *m_account.User
-	SpaceId     int
+	GroupId     int
 	FileType    int
 	FileHeaders []*multipart.FileHeader
 }
 
 type SliceUploadParams struct {
-	SpaceId         int
+	GroupId         int
 	FileType        int
 	Filename        string
 	FileHeader      *multipart.FileHeader
@@ -98,6 +100,14 @@ func (this *Uploader) getStoragePathByType(fileType int) string {
 	}
 }
 
+func (this *Uploader) getGroupForUser(groupId int, user *bm_account.User) *file.Group {
+	groupRepo := file.NewGroupRepository(this.GetCtx())
+	if groupId == 0 {
+		return groupRepo.GetDefaultForUser(user)
+	}
+	return groupRepo.GetForUser(user, groupId)
+}
+
 func (this *Uploader) saveFile(fh *multipart.FileHeader, path string) error {
 	out, err := os.Create(path)
 	if err != nil {
@@ -157,6 +167,12 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 	for _, dbModel := range dbModels {
 		existedHashes = append(existedHashes, dbModel.Hash)
 	}
+
+	group := this.getGroupForUser(params.GroupId, params.User)
+	if group == nil {
+		panic(ghost.NewBusinessError("用户分组不存在"))
+	}
+
 	lister := ghost_util.NewListerFromStrings(existedHashes)
 	for _, hash := range hashes {
 		if lister.Has(hash) {
@@ -175,7 +191,7 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 		}
 		result := db.Create(&db_file.File{
 			UserId:      params.User.Id,
-			SpaceId:     params.SpaceId,
+			GroupId:     params.GroupId,
 			Type:        params.FileType,
 			Hash:        hash,
 			Name:        fh.Filename,
@@ -244,14 +260,14 @@ func (this *Uploader) UploadSlicedFile(params *SliceUploadParams) {
 	}
 	db := ghost.GetDBFromCtx(this.GetCtx())
 	dbModel := &db_file.File{
-		SpaceId:     params.SpaceId,
+		GroupId:     params.GroupId,
 		Type:        params.FileType,
 		Hash:        params.CompleteHash,
 		Status:      db_file.FILE_STATUS_SLICE_SAVED,
 		StoragePath: tmpDirPath + "___" + params.Filename,
 		CreatedTime: ghost_util.DEFAULT_TIME,
 	}
-	var count int
+	var count int64
 	if err = db.Model(&db_file.File{}).Where(ghost.Map{
 		"hash": params.CompleteHash,
 	}).Count(&count).Error; err != nil {
@@ -301,7 +317,7 @@ func init() {
 	} else {
 		STORAGE_ROOT_PATH = "/picasso"
 	}
-	MEDIA_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "media")
+	MEDIA_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "file")
 	THUMBNAIL_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "thumbnail")
 	FILE_STORAGE_PATH = path.Join(STORAGE_ROOT_PATH, string(os.PathSeparator), "file")
 

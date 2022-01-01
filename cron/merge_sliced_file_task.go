@@ -62,11 +62,8 @@ func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
 		"status": db_file.FILE_STATUS_SLICE_SAVED,
 	}).First(&dbModel)
 	if err := result.Error; err != nil {
-		if result.RecordNotFound() {
-			return
-		}
 		ghost.Error(err)
-		panic(err)
+		return
 	}
 
 	ghost.Info("[merge_sliced_file_task] start handle file: " + dbModel.Hash)
@@ -123,7 +120,7 @@ func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
 	result = db.Model(&db_file.File{}).Where(ghost.Map{
 		"type": dbModel.Type,
 		"hash": dbModel.Hash,
-	}).Update(ghost.Map{
+	}).Updates(ghost.Map{
 		"storage_path": targetFilePath,
 		"status":       db_file.FILE_STATUS_SAVED,
 	})

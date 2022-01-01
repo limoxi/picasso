@@ -48,7 +48,7 @@ type File struct {
 	ghost.BaseDBModel
 
 	UserId      int
-	SpaceId     int
+	GroupId     int
 	Type        int
 	Hash        string `gorm:"size:128"`
 	Name        string `gorm:"size:128"`

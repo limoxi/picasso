@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/limoxi/ghost"
 	bs_media "picasso/business/app/file"
-	db_space "picasso/db/space"
+	db_space "picasso/db/user"
 	"testing"
 )
 

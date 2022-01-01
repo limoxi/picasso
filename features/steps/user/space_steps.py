@@ -27,7 +27,7 @@ def update_space_code(space_id, code):
 
 @when(u"'{username}'创建空间'{space_name}'")
 def step_impl(context, username, space_name):
-	response = context.client.put('space.space', {
+	response = context.client.put('group.group', {
 		'name': space_name
 	})
 	bdd_util.assert_api_call_success(response)
@@ -35,14 +35,14 @@ def step_impl(context, username, space_name):
 @then(u"'{username}'可以查看自己的空间列表")
 def step_impl(context, username):
 	expected = json.loads(context.text)
-	response = context.client.get('space.spaces', {})
+	response = context.client.get('group.spaces', {})
 	actual = response['data']['spaces']
 	bdd_util.assert_json(expected, actual)
 
 @when(u"'{username}'为空间'{space_name}'生成邀请码'{code}'")
 def step_impl(context, username, space_name, code):
 	space_id = get_space_id(space_name, username)
-	response = context.client.put('space.code', {
+	response = context.client.put('group.code', {
 		"space_id": space_id,
 	})
 	bdd_util.assert_api_call_success(response)
@@ -50,7 +50,7 @@ def step_impl(context, username, space_name, code):
 
 @when(u"'{member_name}'使用邀请码'{code}'加入空间'{space_name}'")
 def step_impl(context, member_name, code, space_name):
-	response = context.client.put('space.member', {
+	response = context.client.put('group.member', {
 		"space_id": get_space_id(space_name),
 		"code": code
 	})
@@ -59,7 +59,7 @@ def step_impl(context, member_name, code, space_name):
 @then(u"'{username}'可以查看空间'{space_name}'的成员列表")
 def step_impl(context, username, space_name):
 	expected = json.loads(context.text)
-	response = context.client.get('space.members', {
+	response = context.client.get('group.members', {
 		"space_id": get_space_id(space_name, username)
 	})
 	actual = response['data']['members']

@@ -13,7 +13,7 @@ type UploadedFiles struct {
 
 	// filename格式必须为：fileType.hash.originFileName
 	PutParams *struct {
-		SpaceId  int                     `form:"space_id"`
+		GroupId  int                     `form:"group_id"`
 		FileType string                  `form:"file_type"`
 		Files    []*multipart.FileHeader `form:"files"`
 	}
@@ -30,7 +30,7 @@ func (this *UploadedFiles) Put() ghost.Response {
 
 	bs_media.NewUploader(ctx).UploadFiles(&bs_media.UploadParams{
 		User:        m_account.GetUserFromCtx(ctx),
-		SpaceId:     params.SpaceId,
+		GroupId:     params.GroupId,
 		FileType:    db_file.FILE_TEXT2TYPE[params.FileType],
 		FileHeaders: params.Files,
 	})
