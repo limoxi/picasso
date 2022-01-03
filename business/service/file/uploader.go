@@ -14,8 +14,7 @@ import (
 	"os"
 	"path"
 	bm_account "picasso/business/model/account"
-	m_account "picasso/business/model/account"
-	"picasso/business/model/file"
+	bm_file "picasso/business/model/file"
 	"picasso/common/util"
 	db_file "picasso/db/file"
 	"strings"
@@ -29,7 +28,7 @@ var THUMBNAIL_STORAGE_PATH string
 var FILE_STORAGE_PATH string
 
 type UploadParams struct {
-	User        *m_account.User
+	User        *bm_account.User
 	GroupId     int
 	FileType    int
 	FileHeaders []*multipart.FileHeader
@@ -100,12 +99,16 @@ func (this *Uploader) getStoragePathByType(fileType int) string {
 	}
 }
 
-func (this *Uploader) getGroupForUser(groupId int, user *bm_account.User) *file.Group {
-	groupRepo := file.NewGroupRepository(this.GetCtx())
+func (this *Uploader) getGroupForUser(groupId int, user *bm_account.User) int {
 	if groupId == 0 {
-		return groupRepo.GetDefaultForUser(user)
+		group := bm_file.NewGroupRepository(this.GetCtx()).GetDefaultForUser(user)
+		return group.Id
 	}
-	return groupRepo.GetForUser(user, groupId)
+	groupUser := bm_file.NewGroupUserRepository(this.GetCtx()).GetById(groupId, user.Id)
+	if groupUser == nil || !groupUser.IsManager {
+		panic(ghost.NewBusinessError("当前用户无权限上传文件"))
+	}
+	return groupId
 }
 
 func (this *Uploader) saveFile(fh *multipart.FileHeader, path string) error {
@@ -168,10 +171,7 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 		existedHashes = append(existedHashes, dbModel.Hash)
 	}
 
-	group := this.getGroupForUser(params.GroupId, params.User)
-	if group == nil {
-		panic(ghost.NewBusinessError("用户分组不存在"))
-	}
+	groupId := this.getGroupForUser(params.GroupId, params.User)
 
 	lister := ghost_util.NewListerFromStrings(existedHashes)
 	for _, hash := range hashes {
@@ -181,24 +181,27 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 		}
 		fh := hash2fh[hash]
 
+		basePath := this.getStoragePathByType(params.FileType)
+		dirPath := string(os.PathSeparator)
 		storagePath := path.Join(
-			this.getStoragePathByType(params.FileType),
-			string(os.PathSeparator), fh.Filename)
+			basePath, dirPath, fh.Filename)
 		err := this.saveFile(fh, storagePath)
 		if err != nil {
 			ghost.Error(err)
 			continue
 		}
+		_, filename := this.getSplitFilename(fh.Filename)
 		result := db.Create(&db_file.File{
-			UserId:      params.User.Id,
-			GroupId:     params.GroupId,
-			Type:        params.FileType,
-			Hash:        hash,
-			Name:        fh.Filename,
-			StoragePath: storagePath,
-			Size:        fh.Size,
-			Status:      db_file.FILE_STATUS_SAVED,
-			CreatedTime: ghost_util.DEFAULT_TIME,
+			UserId:          params.User.Id,
+			GroupId:         groupId,
+			Type:            params.FileType,
+			Hash:            hash,
+			Name:            filename,
+			StorageBasePath: basePath,
+			StorageDirPath:  dirPath,
+			Size:            fh.Size,
+			Status:          db_file.FILE_STATUS_SAVED,
+			CreatedTime:     ghost_util.DEFAULT_TIME,
 		})
 		if err := result.Error; err != nil {
 			ghost.Error(err)
@@ -244,9 +247,10 @@ func (this *Uploader) UploadSlicedFile(params *SliceUploadParams) {
 		panic(ghost.NewBusinessError("invalid_hash", fmt.Sprintf("文件hash不一致:%s-%s", params.SliceHash, h)))
 	}
 	pureFileName := strings.Split(params.Filename, ".")[0]
+	basePath := this.getStoragePathByType(params.FileType)
+	dirPath := fmt.Sprintf("tmp_%s_%s", pureFileName, params.CompleteHash)
 	tmpDirPath := path.Join(
-		this.getStoragePathByType(params.FileType),
-		fmt.Sprintf("tmp_%s_%s", pureFileName, params.CompleteHash))
+		basePath, dirPath)
 	err = os.Mkdir(tmpDirPath, os.ModeDir)
 	if err != nil {
 		ghost.Warn(err)
@@ -260,12 +264,14 @@ func (this *Uploader) UploadSlicedFile(params *SliceUploadParams) {
 	}
 	db := ghost.GetDBFromCtx(this.GetCtx())
 	dbModel := &db_file.File{
-		GroupId:     params.GroupId,
-		Type:        params.FileType,
-		Hash:        params.CompleteHash,
-		Status:      db_file.FILE_STATUS_SLICE_SAVED,
-		StoragePath: tmpDirPath + "___" + params.Filename,
-		CreatedTime: ghost_util.DEFAULT_TIME,
+		GroupId:         params.GroupId,
+		Type:            params.FileType,
+		Hash:            params.CompleteHash,
+		Name:            params.Filename,
+		Status:          db_file.FILE_STATUS_SLICE_SAVED,
+		StorageBasePath: basePath,
+		StorageDirPath:  dirPath,
+		CreatedTime:     ghost_util.DEFAULT_TIME,
 	}
 	var count int64
 	if err = db.Model(&db_file.File{}).Where(ghost.Map{
@@ -286,8 +292,8 @@ func (this *Uploader) UploadSlicedFile(params *SliceUploadParams) {
 		SliceIndex:      params.SliceIndex,
 		TotalSliceCount: params.TotalSliceCount,
 		StoragePath:     storagePath,
-		Status:          db_file.SLICED_FILE_STATUS_SAVED,
 		Size:            params.FileHeader.Size,
+		Status:          db_file.SLICED_FILE_STATUS_SAVED,
 	})
 	if err := result.Error; err != nil {
 		panic(err)

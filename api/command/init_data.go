@@ -6,18 +6,16 @@ import (
 
 type InitData struct {
 	ghost.ApiTemplate
-
 }
 
-func (this *InitData) Resource() string{
+func (this *InitData) Resource() string {
 	return "command.init_data"
 }
 
-func (this *InitData) Post() ghost.Response{
-	ghost.SyncDB()
+func (this *InitData) Post() ghost.Response {
 	return ghost.NewJsonResponse(nil)
 }
 
-func init(){
+func init() {
 	ghost.RegisterApi(&InitData{})
 }

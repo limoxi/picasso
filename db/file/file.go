@@ -47,15 +47,16 @@ var MEDIA_TEXT2TYPE = map[string]int{
 type File struct {
 	ghost.BaseDBModel
 
-	UserId      int
-	GroupId     int
-	Type        int
-	Hash        string `gorm:"size:128"`
-	Name        string `gorm:"size:128"`
-	StoragePath string `gorm:"size:256"`
-	Size        int64  // 大小，单位B
-	Metadata    string `gorm:"type:text"` // 元信息
-	Status      int
+	UserId          int
+	GroupId         int
+	Type            int
+	Hash            string `gorm:"size:128"`
+	Name            string `gorm:"size:128"`
+	StorageBasePath string `gorm:"size:256"`
+	StorageDirPath  string `gorm:"size:256"`
+	Size            int64  // 大小，单位B
+	Metadata        string `gorm:"type:text"` // 元信息
+	Status          int
 
 	// 媒体信息
 	ThumbnailPath string    `gorm:"size:256"`

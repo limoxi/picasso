@@ -1,5 +1,6 @@
 package db
 
+// do nothing
 import ( // make sure this is the forth line, or code gen will fail
 	"github.com/limoxi/ghost"
 	_ "picasso/db/file"

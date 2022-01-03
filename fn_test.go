@@ -1,48 +1,18 @@
 package main
 
 import (
-	"context"
 	"github.com/limoxi/ghost"
-	bs_media "picasso/business/app/file"
-	db_space "picasso/db/user"
+	"gorm.io/gorm"
 	"testing"
 )
 
 func TestFn(t *testing.T) {
-	var dbModels []*db_space.Space
-	db := ghost.GetDB().Model(&db_space.Space{}).Where(ghost.Map{
-		"id__gt": 0,
+	st := new(gorm.Statement)
+	cns := st.BuildCondition(ghost.Map{
+		"id__in":            []int{1, 2, 3},
+		"created_at__range": []string{"2021-01-02", "2021-12-09"},
+		"ss__not":           "sync",
+		"age__gte":          21,
 	})
-	paginator := ghost.NewPaginator(2, 3)
-	db = paginator.Paginate(db)
-	result := db.Find(&dbModels)
-	if err := result.Error; err != nil {
-		t.Log(err)
-	}
-	t.Log(paginator.ToMap())
-}
-
-type A struct {
-	name string
-}
-
-func (this *A) Set(s string) {
-	this.name = s
-}
-
-func (a A) get() string {
-	return a.name
-}
-
-type B struct {
-	*A
-}
-
-func TestFn2(t *testing.T) {
-
-	t.Log(16 & 16)
-}
-
-func TestFn1(t *testing.T) {
-	bs_media.NewMediaMetadataProcessor(context.Background()).ProcessImage(nil)
+	t.Log(cns)
 }

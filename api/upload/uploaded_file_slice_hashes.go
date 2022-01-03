@@ -3,7 +3,7 @@ package upload
 import (
 	"github.com/limoxi/ghost"
 	ghost_util "github.com/limoxi/ghost/utils"
-	bs_media "picasso/business/app/file"
+	bs_file "picasso/business/service/file"
 )
 
 type UploadedFileSliceHashes struct {
@@ -28,7 +28,7 @@ func (this *UploadedFileSliceHashes) Get() ghost.Response {
 		panic(err)
 	}
 	return ghost.NewJsonResponse(
-		bs_media.NewFileService(ctx).CheckSliceExistenceByHashes(params.CompleteHash, hashList),
+		bs_file.NewFileService(ctx).CheckSliceExistenceByHashes(params.CompleteHash, hashList),
 	)
 }
 

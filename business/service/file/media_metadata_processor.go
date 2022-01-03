@@ -5,6 +5,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/go-cmd/cmd"
 	"github.com/limoxi/ghost"
+	bm_file "picasso/business/model/file"
 	db_file "picasso/db/file"
 )
 
@@ -16,11 +17,11 @@ func (this *MediaMetadataProcessor) getMediaType() int {
 	return 0 // todo
 }
 
-func (this *MediaMetadataProcessor) Process(dbModel *db_file.File) *Metadata {
+func (this *MediaMetadataProcessor) Process(mediaFile *bm_file.File) *Metadata {
 	mediaType := this.getMediaType()
 	switch mediaType {
 	case db_file.MEDIA_TYPE_IMAGE:
-		return this.processImage(dbModel)
+		return this.processImage(mediaFile)
 	case db_file.MEDIA_TYPE_VIDEO:
 		return this.processVideo()
 	default:
@@ -28,10 +29,10 @@ func (this *MediaMetadataProcessor) Process(dbModel *db_file.File) *Metadata {
 	}
 }
 
-func (this *MediaMetadataProcessor) processImage(dbModel *db_file.File) *Metadata {
+func (this *MediaMetadataProcessor) processImage(mediaFile *bm_file.File) *Metadata {
 	result := <-cmd.NewCmd(
 		"ExifTool",
-		dbModel.StoragePath,
+		mediaFile.GetFullPath(),
 		"-c", "%.6f degrees",
 		"-d", "%Y-%m-%d %H:%M:%S").Start()
 	spew.Dump(result.Stdout)

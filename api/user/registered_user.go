@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/limoxi/ghost"
-	app_account "picasso/business/app/account"
+	app_account "picasso/business/service/account"
 )
 
 type RegisteredUser struct {

@@ -7,7 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	bs_file "picasso/business/app/file"
+	bm_file "picasso/business/model/file"
+	bs_file "picasso/business/service/file"
 	db_file "picasso/db/file"
 	"sort"
 	"strconv"
@@ -17,6 +18,7 @@ import (
 // mergeSlicedFileTask 合并切片上传的文件
 type mergeSlicedFileTask struct {
 	cron.CronTask
+	cron.Pipe
 }
 
 func (this *mergeSlicedFileTask) getStoragePathByType(fileType int) string {
@@ -54,24 +56,11 @@ func (this *mergeSlicedFileTask) allSlicesIsHere(slices []string) bool {
 	return true
 }
 
-func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
-	db := taskCtx.GetDb()
+func (this *mergeSlicedFileTask) RunConsumer(data interface{}, taskCtx *cron.TaskContext) {
+	file := data.(*bm_file.File)
+	ghost.Info("[merge_sliced_file_task] start handle file: " + file.Hash)
 
-	var dbModel db_file.File
-	result := db.Model(&db_file.File{}).Where(ghost.Map{
-		"status": db_file.FILE_STATUS_SLICE_SAVED,
-	}).First(&dbModel)
-	if err := result.Error; err != nil {
-		ghost.Error(err)
-		return
-	}
-
-	ghost.Info("[merge_sliced_file_task] start handle file: " + dbModel.Hash)
-
-	sps := strings.Split(dbModel.StoragePath, "___")
-	tmpDirPath := sps[0]
-	filename := sps[1]
-
+	tmpDirPath := path.Join(file.StorageBasePath, file.StorageDirPath)
 	fs, err := ioutil.ReadDir(tmpDirPath)
 	if err != nil {
 		ghost.Error(err)
@@ -89,7 +78,7 @@ func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
 		return
 	}
 	sort.Strings(slices)
-	targetFilePath := path.Join(this.getStoragePathByType(dbModel.Type), filename)
+	targetFilePath := path.Join(file.StorageBasePath, file.Name)
 	targetFile, err := os.OpenFile(targetFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		ghost.Error(err)
@@ -117,12 +106,12 @@ func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
 		panic(err)
 	}
 
-	result = db.Model(&db_file.File{}).Where(ghost.Map{
-		"type": dbModel.Type,
-		"hash": dbModel.Hash,
+	db := taskCtx.GetDb()
+	result := db.Model(&db_file.File{}).Where(ghost.Map{
+		"hash": file.Hash,
 	}).Updates(ghost.Map{
-		"storage_path": targetFilePath,
-		"status":       db_file.FILE_STATUS_SAVED,
+		"storage_dir_path": "",
+		"status":           db_file.FILE_STATUS_SAVED,
 	})
 	if err = result.Error; err != nil {
 		os.Remove(targetFilePath)
@@ -133,15 +122,30 @@ func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
 	if err != nil {
 		panic(err)
 	}
+
+}
+
+func (this *mergeSlicedFileTask) Run(taskCtx *cron.TaskContext) {
+
+	files := bm_file.NewFileRepository(taskCtx.GetCtx()).GetByFilters(ghost.Map{
+		"status": db_file.FILE_STATUS_SLICE_SAVED,
+	})
+	for _, file := range files {
+		err := this.AddData(file)
+		if err != nil {
+			break
+		}
+	}
 }
 
 func NewMergeSlicedFileTask() *mergeSlicedFileTask {
 	task := new(mergeSlicedFileTask)
 	task.SetName("merge_sliced_file_task")
+	task.Init(10)
 	return task
 }
 
 func init() {
 	task := NewMergeSlicedFileTask()
-	cron.RegisterTask(task, "0 */5 * * * *", true)
+	cron.RegisterPipeTask(task, "0 */5 * * * *")
 }
