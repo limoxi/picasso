@@ -9,10 +9,11 @@ database:
         max_conns: "${DB_MAX_CONNS} || 100"
         max_idle_conns: "${DB_MAX_IDLE_CONNS} || 10"
         max_idle_timeout: "${DB_MAX_IDLE_TIMEOUT} || 0"
+        debug: true
 web_server:
     host: 0.0.0.0
     port: 8881
 run_mod: rest
 cors:
     white_list:
-        - "*"
+       - "*"

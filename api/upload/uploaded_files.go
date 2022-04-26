@@ -2,6 +2,7 @@ package upload
 
 import (
 	"github.com/limoxi/ghost"
+	ghost_util "github.com/limoxi/ghost/utils"
 	"mime/multipart"
 	bm_account "picasso/business/model/account"
 	bs_file "picasso/business/service/file"
@@ -11,11 +12,11 @@ import (
 type UploadedFiles struct {
 	ghost.ApiTemplate
 
-	// filename格式必须为：hash.originFileName
 	PutParams *struct {
 		GroupId  int                     `form:"group_id"`
 		FileType string                  `form:"file_type"`
 		Files    []*multipart.FileHeader `form:"files"`
+		Hashes   string                  `form:"hashes"`
 	}
 }
 
@@ -32,11 +33,17 @@ func (this *UploadedFiles) Put() ghost.Response {
 		panic(ghost.NewBusinessError("不支持的文件类型"))
 	}
 
+	var hashes []string
+	if err := ghost_util.Decode(params.Hashes, &hashes); err != nil {
+		panic(err)
+	}
+
 	bs_file.NewUploader(ctx).UploadFiles(&bs_file.UploadParams{
 		User:        bm_account.GetUserFromCtx(ctx),
 		GroupId:     params.GroupId,
 		FileType:    fileType,
 		FileHeaders: params.Files,
+		Hashes:      hashes,
 	})
 	return ghost.NewJsonResponse(ghost.Map{})
 }

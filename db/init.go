@@ -2,8 +2,10 @@ package db
 
 // do nothing
 import ( // make sure this is the forth line, or code gen will fail
+
 	"github.com/limoxi/ghost"
 	_ "picasso/db/file"
+	_ "picasso/db/system"
 	_ "picasso/db/user"
 )
 
@@ -17,6 +19,7 @@ func init() {
 			dbConf.GetString("user"),
 			dbConf.GetString("password"),
 			dbConf.GetString("dbname"),
+			dbConf.GetBool("debug", false),
 		),
 	)
 }

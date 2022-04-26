@@ -16,3 +16,7 @@ func TestFn(t *testing.T) {
 	})
 	t.Log(cns)
 }
+
+func TestAst(t *testing.T) {
+
+}

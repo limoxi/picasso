@@ -12,10 +12,12 @@ import (
 type User struct {
 	ghost.DomainModel
 
-	Id        int
-	Phone     string
-	Password  string
-	CreatedAt time.Time
+	Id       int
+	Avatar   string
+	Nickname string
+	Phone    string
+
+	Password string
 }
 
 func (this *User) Update(nickname, avatar string) {
@@ -54,7 +56,7 @@ func GetUserFromCtx(ctx context.Context) *User {
 	return nil
 }
 
-// 获取jwt_token
+// GetJWTToken 获取jwt_token
 func (this *User) GetJWTToken() string {
 	return util.EncodeJwtToken(ghost.Map{
 		"user_id": this.Id,

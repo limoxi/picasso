@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-const MAX_MEDIA_SIZE = 32 * 1024 * 1024 // 单个文件最大32m
+const MAX_MEDIA_SIZE = 50 * 1024 * 1024 // 单个文件最大32m
 
 var STORAGE_ROOT_PATH string
 var MEDIA_STORAGE_PATH string
@@ -32,6 +32,7 @@ type UploadParams struct {
 	GroupId     int
 	FileType    int
 	FileHeaders []*multipart.FileHeader
+	Hashes      []string
 }
 
 type SliceUploadParams struct {
@@ -78,16 +79,6 @@ func (this *Uploader) GetHash(fh *multipart.FileHeader) (string, error) {
 	s := make([]byte, hex.EncodedLen(hash.Size()))
 	hex.Encode(s, hash.Sum(nil))
 	return string(bytes.ToLower(s)), nil
-}
-
-// getSplitFilename
-// 文件名结构：hash.原名.后缀
-func (this *Uploader) getSplitFilename(filename string) (string, string) {
-	sps := strings.Split(filename, ".")
-	if len(sps) == 3 {
-		return sps[0], strings.Join([]string{sps[1], sps[2]}, ".")
-	}
-	return sps[0], sps[1]
 }
 
 func (this *Uploader) getStoragePathByType(fileType int) string {
@@ -138,8 +129,8 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 	db := ghost.GetDBFromCtx(ctx)
 	hashes := make([]string, 0)
 	hash2fh := make(map[string]*multipart.FileHeader)
-	for _, fh := range params.FileHeaders {
-		eHash, _ := this.getSplitFilename(fh.Filename)
+	for index, fh := range params.FileHeaders {
+		eHash := params.Hashes[index]
 		uploadResult[eHash] = false
 
 		if fh.Size == 0 {
@@ -154,7 +145,7 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 
 		if hash != eHash {
 			panic(ghost.NewBusinessError("invalid_hash",
-				fmt.Sprintf("文件hash不一致:%s-%s", fh.Filename, hash)))
+				fmt.Sprintf("文件hash不一致:%s-%s!=%s", fh.Filename, hash, eHash)))
 		}
 		hashes = append(hashes, hash)
 		hash2fh[hash] = fh
@@ -190,13 +181,12 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 			ghost.Error(err)
 			continue
 		}
-		_, filename := this.getSplitFilename(fh.Filename)
 		result := db.Create(&db_file.File{
 			UserId:          params.User.Id,
 			GroupId:         groupId,
 			Type:            params.FileType,
 			Hash:            hash,
-			Name:            filename,
+			Name:            fh.Filename,
 			StorageBasePath: basePath,
 			StorageDirPath:  dirPath,
 			Size:            fh.Size,

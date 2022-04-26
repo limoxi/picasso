@@ -3,6 +3,7 @@ package file
 import (
 	"context"
 	"github.com/limoxi/ghost"
+	ghost_util "github.com/limoxi/ghost/utils"
 	"picasso/business/model/account"
 	db_file "picasso/db/file"
 )
@@ -64,8 +65,9 @@ func (this *GroupRepository) GetDefaultForUser(user *account.User) *Group {
 		return groups[0]
 	}
 	dbModel := db_file.Group{
-		Name:   "default",
-		UserId: user.Id,
+		Name:          "default",
+		UserId:        user.Id,
+		CodeExpiredAt: ghost_util.DEFAULT_TIME,
 	}
 	if err := ghost.GetDBFromCtx(this.GetCtx()).Create(&dbModel).Error; err != nil {
 		panic(err)

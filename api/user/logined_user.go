@@ -11,8 +11,8 @@ type LoginedUser struct {
 	ghost.ApiTemplate
 
 	PutParams *struct {
-		Phone    string `json:"phone"`
-		Password string `json:"password"`
+		Phone    string `json:"phone" binding:"required"`
+		Password string `json:"password" binding:"required"`
 	}
 }
 
