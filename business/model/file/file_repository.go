@@ -10,9 +10,13 @@ type FileRepository struct {
 	ghost.BaseDomainRepository
 }
 
-func (this *FileRepository) GetByFilters(filters ghost.Map) []*File {
+func (this *FileRepository) GetByFilters(filters ghost.Map, orderAttrs ...string) []*File {
 	ctx := this.GetCtx()
-	db := ghost.GetDBFromCtx(ctx).Model(&db_file.File{}).Where(filters).Order("-id")
+	db := ghost.GetDBFromCtx(ctx).Model(&db_file.File{}).Where(filters)
+	if len(orderAttrs) == 0 {
+		orderAttrs = append(orderAttrs, "-id")
+	}
+	db = db.Order(orderAttrs)
 	var dbModels []*db_file.File
 	if this.Paginator != nil {
 		this.Paginator.Paginate(db)
@@ -35,6 +39,26 @@ func (this *FileRepository) GetPagedFilesForUser(userId int, filters ghost.Map) 
 	}
 	filters["user_id"] = userId
 	return this.GetByFilters(filters)
+}
+
+func (this *FileRepository) GetOrderedFilesForUser(userId int, filters ghost.Map, orderAttrs []string) []*File {
+	filters["user_id"] = userId
+	filters["type"] = db_file.FILE_TYPE_DIR
+	dirs := this.GetByFilters(filters, orderAttrs...)
+	filters["type"] = db_file.FILE_TYPE_FILE
+	files := this.GetByFilters(filters, orderAttrs...)
+	dirs = append(dirs, files...)
+	return dirs
+}
+
+func (this *FileRepository) GetById(id int) *File {
+	files := this.GetByFilters(ghost.Map{
+		"id": id,
+	})
+	if len(files) > 0 {
+		return files[0]
+	}
+	return nil
 }
 
 func NewFileRepository(ctx context.Context) *FileRepository {

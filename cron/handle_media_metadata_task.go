@@ -23,7 +23,6 @@ func (this *handleMediaMetadataTask) RunConsumer(data interface{}, taskCtx *cron
 
 func (this *handleMediaMetadataTask) Run(taskCtx *cron.TaskContext) {
 	files := bm_file.NewFileRepository(taskCtx.GetCtx()).GetByFilters(ghost.Map{
-		"type":   db_file.FILE_TYPE_MEDIA,
 		"status": db_file.FILE_STATUS_SAVED,
 	})
 	for _, file := range files {
@@ -42,6 +41,6 @@ func NewHandleMediaMetadataTask() *handleMediaMetadataTask {
 }
 
 func init() {
-	task := NewHandleMediaMetadataTask()
-	cron.RegisterPipeTask(task, "*/5 * * * * *")
+	//task := NewHandleMediaMetadataTask()
+	//cron.RegisterPipeTask(task, "*/5 * * * * *")
 }

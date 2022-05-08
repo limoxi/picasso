@@ -49,5 +49,4 @@ require (
 )
 
 replace github.com/limoxi/ghost => ../ghost
-
-//replace github.com/jinzhu/gorm => github.com/limoxi/gorm v1.9.120
+replace gorm.io/gorm => ../gorm

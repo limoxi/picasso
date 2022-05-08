@@ -1,4 +1,4 @@
-package upload
+package file
 
 import (
 	"github.com/limoxi/ghost"
@@ -14,7 +14,7 @@ type UploadedFileHashes struct {
 }
 
 func (this *UploadedFileHashes) Resource() string {
-	return "upload.uploaded_file_hashes"
+	return "file.uploaded_file_hashes"
 }
 
 // Put 支持秒传，检查hashcode是否已存在

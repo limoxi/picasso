@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+const FILE_TYPE_DIR = 1  // 目录
+const FILE_TYPE_FILE = 2 // 文件
+
 const FILE_STATUS_SLICE_SAVED = -1
 const FILE_STATUS_SAVED = 0
 const FILE_STATUS_PENDING = 1
@@ -20,47 +23,37 @@ var FILE_STATUS2TEXT = map[int]string{
 const SLICED_FILE_STATUS_SAVED = 0  // 已保存
 const SLICED_FILE_STATUS_MERGED = 1 // 已合并
 
-const FILE_TYPE_FILE = 1
-const FILE_TYPE_MEDIA = 2
+const CATEGORY_FILE = "FILE"
+const CATEGORY_GALLERY = "GALLERY"
+const CATEGORY_VIDEO = "VIDEO"
+const CATEGORY_SHARE = "SHARE"
+const CATEGORY_RECYCLE = "RECYCLE"
 
-var FILE_TEXT2TYPE = map[string]int{
-	"file":  FILE_TYPE_FILE,
-	"media": FILE_TYPE_MEDIA,
-}
-
-const MEDIA_TYPE_IMAGE = 1
-const MEDIA_TYPE_VIDEO = 2
-const MEDIA_TYPE_OTHERS = 3
-
-var MEDIA_TYPE2TEXT = map[int]string{
-	MEDIA_TYPE_IMAGE:  "image",
-	MEDIA_TYPE_VIDEO:  "video",
-	MEDIA_TYPE_OTHERS: "others",
-}
-var MEDIA_TEXT2TYPE = map[string]int{
-	"image":  MEDIA_TYPE_IMAGE,
-	"video":  MEDIA_TYPE_VIDEO,
-	"others": MEDIA_TYPE_OTHERS,
+var CATEGORY2CN = map[string]string{
+	CATEGORY_FILE:    "文件",
+	CATEGORY_GALLERY: "相册",
+	CATEGORY_VIDEO:   "影音",
+	CATEGORY_SHARE:   "分享",
+	CATEGORY_RECYCLE: "回收站",
 }
 
 // File 文件信息
 type File struct {
 	ghost.BaseDBModel
 
-	UserId          int
-	GroupId         int
-	Type            int
-	Hash            string `gorm:"size:128"`
-	Name            string `gorm:"size:128"`
-	StorageBasePath string `gorm:"size:256"`
-	StorageDirPath  string `gorm:"size:256"`
-	Size            int64  // 大小，单位B
-	Metadata        string `gorm:"type:text"` // 元信息
-	Status          int
+	UserId int
+	Type   int
+	Path   string `gorm:"size:512"`
+	Hash   string `gorm:"size:128"`
+	Status int
 
-	// 媒体信息
-	ThumbnailPath string    `gorm:"size:256"`
-	CreatedTime   time.Time // 原始文件创建时间
+	// 元信息
+	Name             string    `gorm:"size:128"`
+	Size             int64     // 大小，单位B
+	Metadata         string    `gorm:"type:text"` // 元信息
+	Thumbnail        string    `gorm:"size:256"`
+	LastModifiedTime time.Time `gorm:"autoCreateTime;null"` // 原始文件最后一次修改时间
+	CreatedTime      time.Time `gorm:"autoCreateTime;null"` // 原始文件创建时间
 }
 
 func (File) TableName() string {
@@ -75,7 +68,7 @@ type SlicedFile struct {
 	SliceHash       string `gorm:"size:128"`
 	SliceIndex      int
 	TotalSliceCount int
-	StoragePath     string `gorm:"size:256"`
+	Path            string `gorm:"size:256"`
 	Status          int
 	Size            int64 // 大小，单位B
 }

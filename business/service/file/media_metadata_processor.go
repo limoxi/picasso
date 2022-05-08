@@ -6,23 +6,21 @@ import (
 	"github.com/go-cmd/cmd"
 	"github.com/limoxi/ghost"
 	bm_file "picasso/business/model/file"
-	db_file "picasso/db/file"
 )
 
 type MediaMetadataProcessor struct {
 	ghost.DomainService
 }
 
-func (this *MediaMetadataProcessor) getMediaType() int {
-	return 0 // todo
+func (this *MediaMetadataProcessor) getMediaType() string {
+	return "" // todo
 }
 
 func (this *MediaMetadataProcessor) Process(mediaFile *bm_file.File) *Metadata {
-	mediaType := this.getMediaType()
-	switch mediaType {
-	case db_file.MEDIA_TYPE_IMAGE:
+	switch this.getMediaType() {
+	case "image":
 		return this.processImage(mediaFile)
-	case db_file.MEDIA_TYPE_VIDEO:
+	case "video":
 		return this.processVideo()
 	default:
 		return nil

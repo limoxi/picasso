@@ -1,18 +1,16 @@
-package upload
+package file
 
 import (
 	"github.com/limoxi/ghost"
 	"mime/multipart"
 	bs_file "picasso/business/service/file"
-	db_file "picasso/db/file"
 )
 
 type UploadedSlicedFile struct {
 	ghost.ApiTemplate
 
 	PutParams *struct {
-		FileType        string                `form:"file_type"`
-		GroupId         int                   `form:"group_id"`
+		Path            string                `form:"path"`
 		Filename        string                `form:"filename"`
 		CompleteHash    string                `form:"complete_hash"`
 		SliceHash       string                `form:"slice_hash"`
@@ -23,7 +21,7 @@ type UploadedSlicedFile struct {
 }
 
 func (this *UploadedSlicedFile) Resource() string {
-	return "upload.uploaded_sliced_file"
+	return "file.uploaded_sliced_file"
 }
 
 func (this *UploadedSlicedFile) Put() ghost.Response {
@@ -31,8 +29,7 @@ func (this *UploadedSlicedFile) Put() ghost.Response {
 	params := this.PutParams
 
 	bs_file.NewUploader(ctx).UploadSlicedFile(&bs_file.SliceUploadParams{
-		FileType:        db_file.FILE_TEXT2TYPE[params.FileType],
-		GroupId:         params.GroupId,
+		Path:            params.Path,
 		Filename:        params.Filename,
 		FileHeader:      params.Slice,
 		CompleteHash:    params.CompleteHash,

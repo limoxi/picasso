@@ -12,18 +12,17 @@ type FileEncodeService struct {
 
 func (this *FileEncodeService) Encode(file *File) *EncodedFile {
 	return &EncodedFile{
-		GroupId:         file.GroupId,
-		Type:            file.Type,
-		Hash:            file.Hash,
-		Name:            file.Name,
-		ThumbnailPath:   file.ThumbnailPath,
-		StorageBasePath: file.StorageBasePath,
-		StorageDirPath:  file.StorageDirPath,
-		StoragePath:     file.GetFullPath(),
-		Status:          file.Status,
-		Metadata:        file.Metadata,
-		CreatedTime:     file.CreatedTime.Format(common.DATETIME_LAYOUT),
-		Size:            file.Size,
+		Id:               file.Id,
+		Type:             file.Type,
+		Hash:             file.Hash,
+		Name:             file.Name,
+		Path:             file.Path,
+		Size:             file.Size,
+		Status:           file.Status,
+		Thumbnail:        file.Thumbnail,
+		Metadata:         file.Metadata,
+		CreatedTime:      file.CreatedTime.Format(common.DATETIME_LAYOUT),
+		LastModifiedTime: file.LastModifiedTime.Format(common.DATETIME_LAYOUT),
 	}
 }
 

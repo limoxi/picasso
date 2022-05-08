@@ -1,4 +1,4 @@
-package upload
+package file
 
 import (
 	"github.com/limoxi/ghost"
@@ -15,7 +15,7 @@ type UploadedFileSliceHashes struct {
 }
 
 func (this *UploadedFileSliceHashes) Resource() string {
-	return "upload.uploaded_file_slice_hashes"
+	return "file.uploaded_file_slice_hashes"
 }
 
 // Put 支持秒传

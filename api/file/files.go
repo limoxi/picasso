@@ -14,6 +14,7 @@ type Files struct {
 		WithOptions ghost.FillOptions `form:"with_option"`
 		CurPage     int               `form:"cur_page"`
 		PageSize    int               `form:"page_size"`
+		OrderAttrs  []string          `form:"order_attrs"`
 	}
 }
 
@@ -29,7 +30,7 @@ func (this *Files) Get() ghost.Response {
 	fileRepo := bm_file.NewFileRepository(ctx)
 	fileRepo.SetPage(params.CurPage, params.PageSize)
 
-	files := fileRepo.GetPagedFilesForUser(user.Id, params.Filters)
+	files := fileRepo.GetOrderedFilesForUser(user.Id, params.Filters, params.OrderAttrs)
 	return ghost.NewJsonResponse(ghost.Map{
 		"files":     bm_file.NewFileEncodeService(ctx).EncodeMany(files),
 		"page_info": fileRepo.GetPaginator().ToMap(),

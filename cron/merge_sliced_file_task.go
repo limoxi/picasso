@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	bm_file "picasso/business/model/file"
-	bs_file "picasso/business/service/file"
 	db_file "picasso/db/file"
 	"sort"
 	"strconv"
@@ -19,15 +18,6 @@ import (
 type mergeSlicedFileTask struct {
 	cron.CronTask
 	cron.Pipe
-}
-
-func (this *mergeSlicedFileTask) getStoragePathByType(fileType int) string {
-	switch fileType {
-	case db_file.FILE_TYPE_MEDIA:
-		return bs_file.MEDIA_STORAGE_PATH
-	default:
-		return bs_file.FILE_STORAGE_PATH
-	}
 }
 
 func (this *mergeSlicedFileTask) allSlicesIsHere(slices []string) bool {
@@ -60,8 +50,7 @@ func (this *mergeSlicedFileTask) RunConsumer(data interface{}, taskCtx *cron.Tas
 	file := data.(*bm_file.File)
 	ghost.Info("[merge_sliced_file_task] start handle file: " + file.Hash)
 
-	tmpDirPath := path.Join(file.StorageBasePath, file.StorageDirPath)
-	fs, err := ioutil.ReadDir(tmpDirPath)
+	fs, err := ioutil.ReadDir(file.Path)
 	if err != nil {
 		ghost.Error(err)
 		panic(err)
@@ -78,7 +67,7 @@ func (this *mergeSlicedFileTask) RunConsumer(data interface{}, taskCtx *cron.Tas
 		return
 	}
 	sort.Strings(slices)
-	targetFilePath := path.Join(file.StorageBasePath, file.Name)
+	targetFilePath := path.Join(file.Path, file.Name)
 	targetFile, err := os.OpenFile(targetFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 	if err != nil {
 		ghost.Error(err)
@@ -88,7 +77,7 @@ func (this *mergeSlicedFileTask) RunConsumer(data interface{}, taskCtx *cron.Tas
 	writer := bufio.NewWriterSize(targetFile, 10<<21)
 	for _, slice := range slices {
 		ghost.Info("merge slice: ", slice)
-		bytes, err := ioutil.ReadFile(path.Join(tmpDirPath, slice))
+		bytes, err := ioutil.ReadFile(path.Join(file.Path, slice))
 		if err != nil {
 			ghost.Error(err)
 			panic(err)
@@ -110,15 +99,15 @@ func (this *mergeSlicedFileTask) RunConsumer(data interface{}, taskCtx *cron.Tas
 	result := db.Model(&db_file.File{}).Where(ghost.Map{
 		"hash": file.Hash,
 	}).Updates(ghost.Map{
-		"storage_dir_path": "",
-		"status":           db_file.FILE_STATUS_SAVED,
+		"path":   "",
+		"status": db_file.FILE_STATUS_SAVED,
 	})
 	if err = result.Error; err != nil {
 		os.Remove(targetFilePath)
 		panic(err)
 	}
 
-	err = os.RemoveAll(tmpDirPath)
+	err = os.RemoveAll(file.Path)
 	if err != nil {
 		panic(err)
 	}
@@ -147,5 +136,5 @@ func NewMergeSlicedFileTask() *mergeSlicedFileTask {
 
 func init() {
 	task := NewMergeSlicedFileTask()
-	cron.RegisterPipeTask(task, "0 */5 * * * *")
+	cron.RegisterPipeTask(task, "1 */1 * * * *", true)
 }

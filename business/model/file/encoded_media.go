@@ -1,16 +1,16 @@
 package file
 
 type EncodedFile struct {
-	GroupId         int    `json:"group_id"`
-	Type            int    `json:"type"`
-	Hash            string `json:"hash"`
-	Name            string `json:"name"`
-	StorageBasePath string `json:"storage_base_path"`
-	StorageDirPath  string `json:"storage_dir_path"`
-	StoragePath     string `json:"storage_path"`
-	ThumbnailPath   string `json:"thumbnail_path"`
-	Size            int64  `json:"size"`
-	Status          int    `json:"status"`
-	Metadata        string `json:"metadata"`
-	CreatedTime     string `json:"created_time"`
+	Id     int    `json:"id"`
+	Type   int    `json:"type"`
+	Hash   string `json:"hash"`
+	Path   string `json:"path"`
+	Status int    `json:"status"`
+
+	Name             string `json:"name"`
+	Size             int64  `json:"size"`
+	Metadata         string `json:"metadata"`
+	Thumbnail        string `json:"thumbnail"`
+	LastModifiedTime string `json:"last_modified_time"`
+	CreatedTime      string `json:"created_time"`
 }
