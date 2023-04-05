@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/limoxi/ghost"
 	"path"
-	bm_account "picasso/business/model/account"
 	db_file "picasso/db/file"
 	"time"
 )
@@ -57,27 +56,4 @@ func NewFileFromDbModel(ctx context.Context, dbModel *db_file.File) *File {
 	inst.SetCtx(ctx)
 	inst.NewFromDbModel(inst, dbModel)
 	return inst
-}
-
-func NewDir(ctx context.Context, user *bm_account.User, path, dirName string) {
-	db := ghost.GetDBFromCtx(ctx)
-	if db.Model(&db_file.File{}).Where(ghost.Map{
-		"user_id": user.Id,
-		"type":    db_file.FILE_TYPE_DIR,
-		"path":    path,
-		"name":    dirName,
-	}).Exist() {
-		panic(ghost.NewBusinessError("目录已存在"))
-	}
-	result := db.Create(&db_file.File{
-		UserId: user.Id,
-		Type:   db_file.FILE_TYPE_DIR,
-		Path:   path,
-		Status: db_file.FILE_STATUS_COMPLETE,
-		Name:   dirName,
-	})
-	if result.Error != nil {
-		ghost.Error(result.Error)
-		panic(ghost.NewSystemError("添加目录失败"))
-	}
 }

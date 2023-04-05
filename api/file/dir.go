@@ -3,7 +3,7 @@ package file
 import (
 	"github.com/limoxi/ghost"
 	bm_account "picasso/business/model/account"
-	bm_file "picasso/business/model/file"
+	bs_file "picasso/business/service/file"
 )
 
 type Dir struct {
@@ -18,6 +18,11 @@ type Dir struct {
 		Id   int    `json:"int"`
 		Name string `json:"name"`
 	}
+
+	DeleteParams *struct {
+		Id   int    `json:"int"`
+		Path string `json:"path"`
+	}
 }
 
 func (this *Dir) Resource() string {
@@ -28,7 +33,7 @@ func (this *Dir) Put() ghost.Response {
 	ctx := this.GetCtx()
 	user := bm_account.GetUserFromCtx(ctx)
 	params := this.PutParams
-	bm_file.NewDir(ctx, user, params.Path, params.Name)
+	bs_file.NewFileService(ctx).AddDir(user, params.Path, params.Name)
 	return ghost.NewJsonResponse(nil)
 }
 
@@ -37,14 +42,18 @@ func (this *Dir) Post() ghost.Response {
 	user := bm_account.GetUserFromCtx(ctx)
 	params := this.PostParams
 
-	file := bm_file.NewFileRepository(ctx).GetById(params.Id)
-	if file == nil {
-		panic(ghost.NewBusinessError("文件夹不存在"))
-	}
-	if file.UserId != user.Id {
-		panic(ghost.NewBusinessError("当前用户无权限"))
-	}
-	file.UpdateName(params.Name)
+	bs_file.NewFileService(ctx).ChangeDirName(user, params.Id, params.Name)
+
+	return ghost.NewJsonResponse(nil)
+}
+
+func (this *Dir) Delete() ghost.Response {
+	ctx := this.GetCtx()
+	user := bm_account.GetUserFromCtx(ctx)
+	params := this.DeleteParams
+
+	bs_file.NewFileService(ctx).DeleteDir(user, params.Id, params.Path)
+
 	return ghost.NewJsonResponse(nil)
 }
 

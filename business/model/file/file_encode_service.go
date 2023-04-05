@@ -21,8 +21,8 @@ func (this *FileEncodeService) Encode(file *File) *EncodedFile {
 		Status:           file.Status,
 		Thumbnail:        file.Thumbnail,
 		Metadata:         file.Metadata,
-		CreatedTime:      file.CreatedTime.Format(common.DATETIME_LAYOUT),
-		LastModifiedTime: file.LastModifiedTime.Format(common.DATETIME_LAYOUT),
+		CreatedTime:      file.CreatedTime.Format(common.SHORT_DATETIME_LAYOUT_V1),
+		LastModifiedTime: file.LastModifiedTime.Format(common.SHORT_DATETIME_LAYOUT_V1),
 	}
 }
 

@@ -162,7 +162,10 @@ func (this *Uploader) UploadFiles(params *UploadParams) UploadResult {
 		}
 		fh := hash2fh[hash]
 
-		storagePath := path.Join(STORAGE_ROOT_PATH, params.Path, fh.Filename)
+		storagePath := path.Join(
+			STORAGE_ROOT_PATH,
+			strings.ReplaceAll(params.Path, ".", string(os.PathSeparator)),
+			fh.Filename)
 		err := this.saveFile(fh, storagePath)
 		if err != nil {
 			ghost.Error(err)
